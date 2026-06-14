@@ -82,4 +82,19 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Proiezioni" }),
   ).toBeVisible();
+
+  // 11. Crea un obiettivo di risparmio e verificalo.
+  await spaceNav.getByRole("link", { name: "Obiettivi", exact: true }).click();
+  await page.getByLabel("Nome obiettivo").fill("Fondo emergenza");
+  await page.getByLabel("Obiettivo", { exact: true }).fill("1000,00");
+  await page.getByLabel("Importo già accumulato").fill("100,00");
+  await page.getByRole("button", { name: "Crea obiettivo" }).click();
+  await expect(
+    page.locator("li").filter({ hasText: "Fondo emergenza" }).first(),
+  ).toBeVisible();
+
+  // 12. Patrimonio netto: salva uno snapshot.
+  await spaceNav.getByRole("link", { name: "Patrimonio", exact: true }).click();
+  await page.getByRole("button", { name: "Salva snapshot di oggi" }).click();
+  await expect(page.getByText("Snapshot salvato")).toBeVisible();
 });

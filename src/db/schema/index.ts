@@ -5,3 +5,4 @@ export * from "./app";
 export * from "./ledger";
 export * from "./budget";
 export * from "./planning";
+export * from "./goals";

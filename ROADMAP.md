@@ -56,11 +56,12 @@
 **Done:** ricorrenze generano/suggeriscono transazioni (auto-post idempotente on-demand); proiezioni con what-if interattivo; espansione RRULE testata. 71 unit + 5 e2e verdi.
 **Note:** auto-post on-demand (niente cron — Vercel Cron come aggiunta futura); vista calendario a griglia → eventuale miglioria (ora lista).
 
-## M4 — Obiettivi e patrimonio netto
-- [ ] **Obiettivi** di risparmio (avanzamento, data target, conto collegato)
-- [ ] **Passività** + **patrimonio netto** nel tempo (snapshot + grafico storico)
+## M4 — Obiettivi e patrimonio netto ✅ (completata)
+- [x] **Obiettivi** di risparmio (avanzamento, data target, conto collegato o importo manuale)
+- [x] **Passività** + **patrimonio netto** corrente + **snapshot** + **grafico storico** (Recharts)
 
-**Done quando:** obiettivi tracciati e curva patrimonio netto visibile.
+**Done:** obiettivi con barre di avanzamento (raggiunto/aggiornabile); patrimonio = conti − passività, snapshot salvabili e curva storica. 77 unit + 5 e2e verdi.
+**Note:** snapshot salvati manualmente (un Vercel Cron potrebbe automatizzarli); patrimonio in valuta base.
 
 ## M5 — Spese condivise
 - [ ] Spese con **split** (importo/percentuale) negli spazi shared

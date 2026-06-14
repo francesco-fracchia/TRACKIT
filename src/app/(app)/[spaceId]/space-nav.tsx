@@ -9,6 +9,8 @@ const SECTIONS = [
   { slug: "accounts", label: "Conti" },
   { slug: "transactions", label: "Transazioni" },
   { slug: "budgets", label: "Budget" },
+  { slug: "goals", label: "Obiettivi" },
+  { slug: "net-worth", label: "Patrimonio" },
   { slug: "planning", label: "Pianificazione" },
   { slug: "projections", label: "Proiezioni" },
   { slug: "members", label: "Membri" },
