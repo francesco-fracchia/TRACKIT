@@ -4,13 +4,13 @@ import { auditLog, type AuditAction } from "@/db/schema";
 
 export interface AuditEntry {
   action: AuditAction;
-  actorUserId?: string;
-  organizationId?: string;
-  entityType?: string;
-  entityId?: string;
-  metadata?: Record<string, unknown>;
-  ip?: string;
-  userAgent?: string;
+  actorUserId?: string | undefined;
+  organizationId?: string | undefined;
+  entityType?: string | undefined;
+  entityId?: string | undefined;
+  metadata?: Record<string, unknown> | undefined;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
 }
 
 /**

@@ -7,6 +7,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { serverEnv } from "@/env";
 import { sendEmail } from "@/lib/email";
+import { ac, roles } from "./permissions";
 
 /**
  * Configurazione Better Auth.
@@ -79,7 +80,18 @@ export const auth = betterAuth({
     twoFactor({
       issuer: "TRACKIT",
     }),
-    organization(),
+    organization({
+      ac,
+      roles,
+      sendInvitationEmail: async ({ email, organization, inviter, id }) => {
+        const url = `${serverEnv.BETTER_AUTH_URL}/invitations/${id}`;
+        await sendEmail({
+          to: email,
+          subject: `Invito a "${organization.name}" — TRACKIT`,
+          text: `${inviter.user.name} ti ha invitato nello spazio "${organization.name}".\nAccetta qui:\n${url}`,
+        });
+      },
+    }),
     // nextCookies DEVE essere l'ultimo plugin: consente la scrittura dei
     // cookie dalle Server Actions di Next.
     nextCookies(),

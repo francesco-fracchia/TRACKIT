@@ -23,7 +23,7 @@ export default async function AppLayout({
     <div className="flex min-h-dvh flex-col">
       <header className="flex items-center justify-between border-b px-6 py-3">
         <nav className="flex items-center gap-4">
-          <Link href="/dashboard" className="font-semibold tracking-tight">
+          <Link href="/spaces" className="font-semibold tracking-tight">
             TRACKIT
           </Link>
           <Link

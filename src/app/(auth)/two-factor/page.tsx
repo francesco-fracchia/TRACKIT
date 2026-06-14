@@ -36,7 +36,7 @@ export default function TwoFactorPage() {
       setServerError(error.message ?? "Codice non valido");
       return;
     }
-    router.push("/dashboard");
+    router.push("/spaces");
   }
 
   return (

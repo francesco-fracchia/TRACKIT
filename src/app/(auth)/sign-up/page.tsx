@@ -33,7 +33,7 @@ export default function SignUpPage() {
       name: values.name,
       email: values.email,
       password: values.password,
-      callbackURL: "/dashboard",
+      callbackURL: "/spaces",
     });
     if (error) {
       setServerError(error.message ?? "Registrazione fallita");

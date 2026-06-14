@@ -33,7 +33,7 @@ export default function SignInPage() {
     const { data, error } = await authClient.signIn.email({
       email: values.email,
       password: values.password,
-      callbackURL: "/dashboard",
+      callbackURL: "/spaces",
     });
     if (error) {
       setServerError(
@@ -46,7 +46,7 @@ export default function SignInPage() {
       router.push("/two-factor");
       return;
     }
-    router.push("/dashboard");
+    router.push("/spaces");
   }
 
   return (
