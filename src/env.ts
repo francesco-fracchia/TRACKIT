@@ -19,7 +19,13 @@ const schema = z.object({
   TURSO_AUTH_TOKEN: z.string().default(""),
 
   BETTER_AUTH_SECRET: z.string().min(1, "BETTER_AUTH_SECRET mancante"),
-  BETTER_AUTH_URL: z.url("BETTER_AUTH_URL deve essere un URL valido"),
+  // Opzionale: se assente viene derivato dall'URL di produzione iniettato da
+  // Vercel (VERCEL_PROJECT_PRODUCTION_URL) o, in locale, da localhost.
+  BETTER_AUTH_URL: z
+    .url("BETTER_AUTH_URL deve essere un URL valido")
+    .optional(),
+  // Iniettata automaticamente da Vercel (dominio di produzione, senza schema).
+  VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),
 
   ENCRYPTION_KEY: z.string().min(1, "ENCRYPTION_KEY mancante"),
 
@@ -52,3 +58,14 @@ if (!parsed.success) {
 }
 
 export const serverEnv = parsed.data;
+
+/**
+ * URL base dell'app, risolto in ordine: BETTER_AUTH_URL esplicito →
+ * dominio di produzione Vercel → localhost (dev). Evita di dover impostare
+ * a mano l'URL prima del primo deploy.
+ */
+export const betterAuthUrl: string =
+  serverEnv.BETTER_AUTH_URL ??
+  (serverEnv.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${serverEnv.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");

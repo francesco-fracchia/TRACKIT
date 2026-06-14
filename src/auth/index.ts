@@ -5,7 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { hash as argonHash, verify as argonVerify } from "@node-rs/argon2";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { serverEnv } from "@/env";
+import { serverEnv, betterAuthUrl } from "@/env";
 import { sendEmail } from "@/lib/email";
 import { ac, roles } from "./permissions";
 
@@ -26,7 +26,7 @@ import { ac, roles } from "./permissions";
 export const auth = betterAuth({
   appName: "TRACKIT",
   secret: serverEnv.BETTER_AUTH_SECRET,
-  baseURL: serverEnv.BETTER_AUTH_URL,
+  baseURL: betterAuthUrl,
 
   database: drizzleAdapter(db, {
     provider: "sqlite",
@@ -103,7 +103,7 @@ export const auth = betterAuth({
       ac,
       roles,
       sendInvitationEmail: async ({ email, organization, inviter, id }) => {
-        const url = `${serverEnv.BETTER_AUTH_URL}/invitations/${id}`;
+        const url = `${betterAuthUrl}/invitations/${id}`;
         await sendEmail({
           to: email,
           subject: `Invito a "${organization.name}" — TRACKIT`,
