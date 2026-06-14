@@ -76,6 +76,23 @@ export const auth = betterAuth({
     useSecureCookies: serverEnv.NODE_ENV === "production",
   },
 
+  // Rate limiting sugli endpoint di auth. Storage su DB → condiviso tra le
+  // istanze serverless (Vercel), niente Redis necessario. Regole più strette
+  // sugli endpoint sensibili (login, registrazione, reset, 2FA).
+  rateLimit: {
+    enabled: true,
+    storage: "database",
+    window: 60,
+    max: 100,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 10 },
+      "/sign-up/email": { window: 60, max: 10 },
+      "/forget-password": { window: 60, max: 5 },
+      "/request-password-reset": { window: 60, max: 5 },
+      "/two-factor/verify-totp": { window: 60, max: 10 },
+    },
+  },
+
   plugins: [
     twoFactor({
       issuer: "TRACKIT",

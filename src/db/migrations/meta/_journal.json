@@ -15,6 +15,13 @@
       "when": 1781459657177,
       "tag": "0001_giant_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1781461629184,
+      "tag": "0002_hot_miek",
+      "breakpoints": true
     }
   ]
 }
