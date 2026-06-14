@@ -15,7 +15,10 @@ export function SpaceNav({ spaceId }: { spaceId: string }) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 overflow-x-auto border-b px-6">
+    <nav
+      aria-label="Sezioni dello spazio"
+      className="flex gap-1 overflow-x-auto border-b px-6"
+    >
       {SECTIONS.map((s) => {
         const href = `/${spaceId}/${s.slug}`;
         const active = pathname === href || pathname.startsWith(`${href}/`);

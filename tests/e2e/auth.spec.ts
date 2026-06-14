@@ -7,10 +7,10 @@ import { test, expect } from "@playwright/test";
  * percorsi UI e di sicurezza che non dipendono dall'email.
  */
 
-test("la route protetta /dashboard redirige al login se non autenticati", async ({
+test("una route protetta redirige al login se non autenticati", async ({
   page,
 }) => {
-  await page.goto("/dashboard");
+  await page.goto("/spaces");
   await expect(page).toHaveURL(/\/sign-in/);
 });
 

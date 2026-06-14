@@ -35,7 +35,7 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: serverEnv.AUTH_REQUIRE_EMAIL_VERIFICATION,
     minPasswordLength: 10,
     // Hashing argon2id: è l'algoritmo di DEFAULT di @node-rs/argon2 (con
     // parametri robusti), quindi non serve specificarlo. Override del default

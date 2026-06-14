@@ -23,6 +23,13 @@ const schema = z.object({
 
   ENCRYPTION_KEY: z.string().min(1, "ENCRYPTION_KEY mancante"),
 
+  // Verifica email obbligatoria (default true). Impostare "false" SOLO nei
+  // test e2e per poter autenticarsi senza intercettare l'email.
+  AUTH_REQUIRE_EMAIL_VERIFICATION: z
+    .string()
+    .optional()
+    .transform((v) => v !== "false"),
+
   EMAIL_FROM: z.string().default("TRACKIT <no-reply@trackit.local>"),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().optional(),
