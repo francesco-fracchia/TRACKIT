@@ -33,4 +33,28 @@
 
 ### D7 — Password hashing: argon2id
 **Scelta:** hashing password con **argon2id** via `@node-rs/argon2`, configurato come custom password hasher in Better Auth (il default sarebbe scrypt).
-**Perché:** requisito di sicurezza esplicito. `@node-rs/argon2` ha binari precompilati (napi), niente toolchain di build.
+**Perché:** requisito di sicurezza esplicito. `@node-rs/argon2` ha binari precompilati (napi), niente toolchain di build. NB: argon2id è già il *default* della libreria, quindi non passiamo opzioni esplicite (evita anche un problema con `isolatedModules` + const enum `Algorithm`).
+
+### D8 — Stack risolto a versioni recenti
+**Scelta:** Next **16** (non 15), React 19.2, TypeScript **6**, Tailwind **v4**, Zod **4**, ESLint **9**.
+**Perché:** `npm install latest` ha risolto a queste major. Conseguenze gestite: Next 16 ha rinominato `middleware.ts` → **`proxy.ts`** (runtime nodejs, no edge) e rimosso `next lint` (uso `eslint .`).
+
+### D9 — i18n senza prefisso URL (per ora)
+**Scelta:** next-intl configurato *senza* segmento `[locale]` e senza middleware di locale, finché c'è una sola lingua (IT).
+**Perché:** evita di accoppiare il proxy di sicurezza (CSP nonce) con la logica di routing locale. Quando aggiungeremo una seconda lingua passeremo a `[locale]` + middleware composto.
+
+### D10 — `env.ts` senza `server-only`
+**Scelta:** il modulo di validazione env (e il client `db`) NON usano il marker `server-only`.
+**Perché:** sono importati anche da script Node (migrazioni, CLI Better Auth) dove `server-only` lancerebbe. La protezione anti-leak resta: non vengono importati da Client Component. I moduli puramente server (DAL `context`, `audit`) invece usano `server-only`.
+
+### D11 — Provider email differito
+**Scelta:** in M0 `sendEmail` logga in console; nessun provider reale.
+**Perché:** un provider SMTP/transactional è un servizio terzo → richiede conferma esplicita. La firma di `sendEmail` è il punto di estensione, il resto non cambierà.
+
+### D12 — ESLint flat config senza FlatCompat
+**Scelta:** flat config basata su `typescript-eslint` + `@next/eslint-plugin-next` diretti, non `FlatCompat(next/core-web-vitals)`.
+**Perché:** FlatCompat con eslint-config-next su ESLint 9 crashava ("circular structure"). La config diretta è più robusta. Regola custom: vietato `sql.raw()`.
+
+### D13 — Ruolo `viewer` e access-control granulare differiti a M1
+**Scelta:** in M0 il plugin organization usa i ruoli nativi (owner/admin/member); il ruolo `viewer` e l'access-control fine verranno configurati in M1 con la UI di gestione membri. La gerarchia dei 4 ruoli è però già implementata e testata nel DAL (`roles.ts`).
+**Perché:** M0 non ha ancora UI membri; meglio configurare l'AC quando serve davvero, evitando astrazioni premature.

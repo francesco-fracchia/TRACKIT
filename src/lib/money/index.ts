@@ -170,8 +170,8 @@ export function allocate(m: Money, weights: readonly number[]): Money[] {
     return { floor: Math.floor(exact), remainder: exact - Math.floor(exact) };
   });
 
-  let distributed = shares.reduce((acc, s) => acc + s.floor, 0);
-  let leftover = total - distributed;
+  const distributed = shares.reduce((acc, s) => acc + s.floor, 0);
+  const leftover = total - distributed;
 
   // Assegna i centesimi residui a chi ha il resto maggiore.
   const order = shares
