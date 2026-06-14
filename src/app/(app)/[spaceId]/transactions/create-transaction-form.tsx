@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -8,6 +8,7 @@ import {
   type CreateTransactionFormInput,
 } from "@/lib/validation/ledger";
 import { createTransactionAction } from "@/server/actions/transactions";
+import { uploadAttachmentAction } from "@/server/actions/attachments";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,13 +37,16 @@ export function CreateTransactionForm({
   accounts,
   categories,
   today,
+  attachmentsEnabled,
 }: {
   spaceId: string;
   accounts: AccountOpt[];
   categories: CategoryOpt[];
   today: string;
+  attachmentsEnabled: boolean;
 }) {
   const [serverError, setServerError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const {
     register,
     handleSubmit,
@@ -73,11 +77,31 @@ export function CreateTransactionForm({
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
-    const res = await createTransactionAction(spaceId, { ...values, tags });
+
+    // Se è stato scelto un file, caricalo prima e collega l'allegato.
+    let attachmentId: string | undefined;
+    const file = fileRef.current?.files?.[0];
+    if (attachmentsEnabled && file) {
+      const fd = new FormData();
+      fd.set("file", file);
+      const up = await uploadAttachmentAction(spaceId, fd);
+      if (up.error) {
+        setServerError(up.error);
+        return;
+      }
+      attachmentId = up.id;
+    }
+
+    const res = await createTransactionAction(spaceId, {
+      ...values,
+      tags,
+      attachmentId,
+    });
     if (res.error) {
       setServerError(res.error);
       return;
     }
+    if (fileRef.current) fileRef.current.value = "";
     reset({
       type: values.type,
       accountId: values.accountId,
@@ -201,6 +225,19 @@ export function CreateTransactionForm({
         <Label htmlFor="tx-note">Nota</Label>
         <Input id="tx-note" {...register("note")} />
       </div>
+
+      {attachmentsEnabled && (
+        <div className="space-y-2">
+          <Label htmlFor="tx-file">Allegato (ricevuta, PDF/immagine)</Label>
+          <input
+            id="tx-file"
+            ref={fileRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,application/pdf"
+            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border file:border-input file:bg-transparent file:px-3 file:py-1 file:text-sm"
+          />
+        </div>
+      )}
 
       {serverError && (
         <p

@@ -76,3 +76,7 @@
 ### D17 — Spazio identificato in URL (`/[spaceId]/...`)
 **Scelta:** le route dell'area dati vivono sotto `/(app)/[spaceId]/...`; ogni pagina/azione verifica la membership con `requireSpaceMember(spaceId)`. L'`activeOrganizationId` di Better Auth non è la fonte di verità.
 **Perché:** URL espliciti e condivisibili; isolamento garantito dal DAL ad ogni richiesta.
+
+### D18 — Allegati: upload server action + Blob `public` con URL non indovinabile
+**Scelta:** upload via server action (`uploadAttachmentAction`) che valida tipo (PNG/JPEG/WEBP/PDF) e dimensione (max 5MB), salva su Vercel Blob con `access: "public"` e chiave random per-spazio. L'`attachmentId` viene poi collegato alla transazione (verifica appartenenza allo spazio).
+**Perché:** semplice e robusto. **Limite noto:** l'URL Blob è pubblico ma non indovinabile; per ricevute sensibili un accesso firmato/privato è un miglioramento futuro (Blob private access). L'upload è disabilitato se manca `BLOB_READ_WRITE_TOKEN` (l'app resta usabile).

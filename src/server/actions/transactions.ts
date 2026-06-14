@@ -54,6 +54,7 @@ export async function createTransactionAction(
     payee: parsed.data.payee || undefined,
     note: parsed.data.note || undefined,
     counterAccountId: parsed.data.counterAccountId || undefined,
+    attachmentId: parsed.data.attachmentId || undefined,
     tagNames: parsed.data.tags,
   });
 

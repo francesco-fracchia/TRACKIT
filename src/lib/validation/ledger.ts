@@ -47,6 +47,7 @@ export const createTransactionSchema = z
     payee: z.string().trim().max(120).optional(),
     note: z.string().trim().max(500).optional(),
     tags: z.array(z.string()).optional(),
+    attachmentId: z.string().optional(),
     // Solo per i trasferimenti:
     counterAccountId: z.string().optional(),
   })

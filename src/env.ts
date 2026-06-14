@@ -30,6 +30,9 @@ const schema = z.object({
     .optional()
     .transform((v) => v !== "false"),
 
+  // Storage allegati (Vercel Blob). Se assente, gli upload sono disabilitati.
+  BLOB_READ_WRITE_TOKEN: z.string().optional(),
+
   EMAIL_FROM: z.string().default("TRACKIT <no-reply@trackit.local>"),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().optional(),

@@ -25,16 +25,17 @@
 **Done:** registrazione→verifica email→login funziona (verificato a runtime); 2FA TOTP attivabile dalle impostazioni; cookie HttpOnly+SameSite=Lax; CSP nonce per-richiesta; CI configurata.
 **Note/rinvii:** ruolo `viewer` + access-control granulare → M1; provider email reale → da confermare; QR per il 2FA (ora mostra la chiave testuale) → miglioria UI.
 
-## M1 — Ledger core
-- [ ] CRUD **spazi** (personal/business/shared) + impostazioni; campi extra business
-- [ ] Gestione **membri**: invito, ruoli (owner/admin/member/viewer), rimozione (audit)
-- [ ] CRUD **conti** (`financial_account`)
-- [ ] **Transazioni** manuali: entrata/uscita/trasferimento, categorie, tag, note, allegato (storage da confermare)
-- [ ] Lista transazioni: filtri, ricerca, paginazione
-- [ ] **Saldi** calcolati (`balances.ts`) + unit test
-- [ ] e2e: spazio→conto→transazione
+## M1 — Ledger core ✅ (completata)
+- [x] CRUD **spazi** (personal/business/shared) + creazione con seed categorie
+- [x] Gestione **membri**: invito, ruoli (owner/admin/member/viewer), cambio ruolo, rimozione (audit)
+- [x] CRUD **conti** (`financial_account`) + soft-delete
+- [x] **Transazioni** manuali: entrata/uscita/trasferimento, categorie, tag, note, **allegato (Vercel Blob)**
+- [x] Lista transazioni: filtri (tipo/conto/date), ricerca, paginazione
+- [x] **Saldi** calcolati (`balances.ts`) + unit test (7)
+- [x] e2e: spazio→conto→transazione→saldo
 
-**Done quando:** un utente gestisce spazi/conti/transazioni con saldi corretti e isolamento per spazio verificato.
+**Done:** un utente crea spazi/conti/transazioni con saldi corretti; isolamento per spazio applicato dal DAL ad ogni query; ruoli applicati (viewer sola lettura); allegati su Blob (gated sul token).
+**Note/rinvii:** accesso privato/firmato agli allegati → miglioria; modifica (edit) transazioni/conti → al bisogno; conversione multi-valuta nel totale → con i report di M2.
 
 ## M2 — Budget e report
 - [ ] **Budget** per categoria (mensile/annuale) + rollover (`budget.ts` + test)

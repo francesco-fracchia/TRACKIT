@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Paperclip } from "lucide-react";
 import { listAccountOptions } from "@/server/dal/accounts";
 import { listCategories } from "@/server/dal/categories";
+import { attachmentsEnabled } from "@/server/dal/attachments";
 import {
   listTransactions,
   type TransactionFilter,
@@ -152,8 +154,19 @@ export default async function TransactionsPage({
                         {t.valueDate}
                       </td>
                       <td className="px-3 py-2">
-                        <div className="font-medium">
+                        <div className="flex items-center gap-1 font-medium">
                           {t.payee || TYPE_LABELS[t.type]}
+                          {t.attachmentUrl && (
+                            <a
+                              href={t.attachmentUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="Apri allegato"
+                              className="text-muted-foreground hover:text-foreground"
+                            >
+                              <Paperclip className="size-3.5" aria-hidden />
+                            </a>
+                          )}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {t.type === "transfer"
@@ -230,6 +243,7 @@ export default async function TransactionsPage({
                 kind: c.kind,
               }))}
               today={todayISO()}
+              attachmentsEnabled={attachmentsEnabled()}
             />
           </CardContent>
         </Card>

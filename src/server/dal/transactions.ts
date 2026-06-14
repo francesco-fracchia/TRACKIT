@@ -14,6 +14,7 @@ import {
 import { alias } from "drizzle-orm/sqlite-core";
 import { db } from "@/db";
 import {
+  attachment,
   category,
   financialAccount,
   transaction,
@@ -23,6 +24,7 @@ import {
 } from "@/db/schema";
 import { ForbiddenError, requireSpaceMember } from "./context";
 import { ensureTags } from "./tags";
+import { attachmentBelongsToSpace } from "./attachments";
 
 export interface CreateTransactionInput {
   type: TransactionType;
@@ -33,6 +35,7 @@ export interface CreateTransactionInput {
   payee?: string | undefined;
   note?: string | undefined;
   counterAccountId?: string | undefined;
+  attachmentId?: string | undefined;
   tagNames?: readonly string[] | undefined;
 }
 
@@ -95,6 +98,15 @@ export async function createTransaction(
     categoryId = input.categoryId;
   }
 
+  // L'allegato, se indicato, deve appartenere allo spazio.
+  let attachmentId: string | null = null;
+  if (input.attachmentId) {
+    if (!(await attachmentBelongsToSpace(spaceId, input.attachmentId))) {
+      throw new ForbiddenError("Allegato non valido");
+    }
+    attachmentId = input.attachmentId;
+  }
+
   const rows = await db
     .insert(transaction)
     .values({
@@ -107,6 +119,7 @@ export async function createTransaction(
       categoryId,
       payee: input.payee ?? null,
       note: input.note ?? null,
+      attachmentId,
       counterAccountId,
       counterAmount,
       createdBy: ctx.userId,
@@ -150,6 +163,7 @@ export interface TransactionRow {
   accountName: string | null;
   counterAccountName: string | null;
   categoryName: string | null;
+  attachmentUrl: string | null;
   tags: string[];
 }
 
@@ -205,6 +219,7 @@ export async function listTransactions(
         accountName: financialAccount.name,
         counterAccountName: counterAccount.name,
         categoryName: category.name,
+        attachmentUrl: attachment.storageKey,
       })
       .from(transaction)
       .leftJoin(
@@ -216,6 +231,7 @@ export async function listTransactions(
         eq(transaction.counterAccountId, counterAccount.id),
       )
       .leftJoin(category, eq(transaction.categoryId, category.id))
+      .leftJoin(attachment, eq(transaction.attachmentId, attachment.id))
       .where(where)
       .orderBy(desc(transaction.valueDate), desc(transaction.bookedAt))
       .limit(pageSize)
