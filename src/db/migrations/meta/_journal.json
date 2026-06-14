@@ -57,6 +57,13 @@
       "when": 1781469561799,
       "tag": "0007_bent_maverick",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1781470652457,
+      "tag": "0008_regular_matthew_murdock",
+      "breakpoints": true
     }
   ]
 }

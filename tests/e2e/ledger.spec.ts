@@ -123,4 +123,18 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   await expect(page.getByText("2 righe", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: /Importa 2/ }).click();
   await expect(page.getByText("Importate 2 transazioni")).toBeVisible();
+
+  // 15. Revisione mensile: apri, aggiungi un proposito, chiudi.
+  await spaceNav.getByRole("link", { name: "Revisioni", exact: true }).click();
+  await page.getByRole("button", { name: "Apri la revisione" }).click();
+  await expect(
+    page.getByText("Propositi per il mese prossimo"),
+  ).toBeVisible();
+  await page.getByPlaceholder("Nuovo proposito / azione…").fill("Rivedere abbonamenti");
+  await page.getByRole("button", { name: "Aggiungi" }).click();
+  await expect(page.getByText("Rivedere abbonamenti")).toBeVisible();
+  await page.getByRole("button", { name: "Chiudi revisione" }).click();
+  await expect(
+    page.getByRole("button", { name: "Riapri revisione" }),
+  ).toBeVisible();
 });

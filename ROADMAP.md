@@ -81,12 +81,12 @@
 **Done:** wizard upload→mappa→anteprima→importa; duplicati e righe invalide saltati; regole di categorizzazione; revert per batch. 97 unit + 5 e2e verdi (e2e import completo).
 **Note:** e2e ora gira su build di produzione (no cold-compile, stabile e veloce); righe grezze non persistite (vedi DECISIONS D26).
 
-## M7 — Revisione mensile (l'"incontro")
-- [ ] Flusso guidato di **chiusura mensile**: snapshot numeri, scostamenti budget, transazioni non categorizzate da sistemare, obiettivi aggiornati
-- [ ] **Note** + **action item** (assegnabili negli spazi shared)
-- [ ] Stato (in corso/chiusa) + **storico** revisioni
+## M7 — Revisione mensile (l'"incontro") ✅ (completata)
+- [x] Flusso guidato: snapshot numeri (entrate/uscite/saldo), scostamenti budget, transazioni non categorizzate da sistemare, obiettivi
+- [x] **Note** + **action item** (assegnabili ai membri)
+- [x] Stato (in corso/chiusa, snapshot congelato alla chiusura) + **storico** revisioni
 
-**Done quando:** l'utente apre/chiude una revisione e ne consulta lo storico.
+**Done:** apri/continua la revisione del mese, rivedi i numeri, aggiungi note e propositi assegnabili, chiudi (congela lo snapshot) e riapri; storico consultabile. 97 unit + 5 e2e verdi.
 
 ## M8 — Open Banking *(bloccata — solo dopo tua conferma)*
 - [ ] Scelta aggregatore (GoCardless/Nordigen, Tink, Salt Edge) — costi/PSD2

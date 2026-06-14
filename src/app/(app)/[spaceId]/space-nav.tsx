@@ -15,6 +15,7 @@ const SECTIONS = [
   { slug: "planning", label: "Pianificazione" },
   { slug: "projections", label: "Proiezioni" },
   { slug: "import", label: "Import" },
+  { slug: "reviews", label: "Revisioni" },
   { slug: "members", label: "Membri" },
 ] as const;
 
