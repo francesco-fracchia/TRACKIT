@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "TRACKIT",
+    "tagline": "Le tue finanze, personali e aziendali, in un unico posto."
+  },
+  "common": {
+    "loading": "Caricamento…",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "confirm": "Conferma",
+    "edit": "Modifica",
+    "create": "Crea",
+    "search": "Cerca",
+    "back": "Indietro",
+    "next": "Avanti",
+    "error": "Si è verificato un errore",
+    "retry": "Riprova"
+  },
+  "theme": {
+    "toggle": "Cambia tema",
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "system": "Sistema"
+  },
+  "auth": {
+    "signIn": "Accedi",
+    "signUp": "Registrati",
+    "signOut": "Esci",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Password dimenticata?"
+  },
+  "home": {
+    "heading": "Benvenuto in TRACKIT",
+    "subheading": "Tracciamento, pianificazione e gestione delle finanze personali e aziendali.",
+    "getStarted": "Inizia ora"
+  }
+}
