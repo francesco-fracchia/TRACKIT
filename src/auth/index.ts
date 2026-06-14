@@ -73,7 +73,9 @@ export const auth = betterAuth({
 
   advanced: {
     cookiePrefix: "trackit",
-    useSecureCookies: serverEnv.NODE_ENV === "production",
+    useSecureCookies:
+      serverEnv.NODE_ENV === "production" &&
+      serverEnv.AUTH_DISABLE_SECURE_COOKIES !== "true",
   },
 
   // Rate limiting sugli endpoint di auth. Storage su DB → condiviso tra le

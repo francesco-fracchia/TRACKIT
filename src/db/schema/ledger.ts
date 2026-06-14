@@ -145,6 +145,8 @@ export const transaction = sqliteTable(
     fxRate: real("fx_rate"),
     // --- Provenienza ---
     recurringRuleId: text("recurring_rule_id"),
+    /** Batch di import di provenienza (testo, no FK: vedi DECISIONS D26). */
+    importBatchId: text("import_batch_id"),
     createdBy: text("created_by").references(() => user.id, {
       onDelete: "set null",
     }),
@@ -161,6 +163,7 @@ export const transaction = sqliteTable(
     index("transaction_org_date_idx").on(t.organizationId, t.valueDate),
     index("transaction_account_date_idx").on(t.accountId, t.valueDate),
     index("transaction_category_idx").on(t.categoryId),
+    index("transaction_import_batch_idx").on(t.importBatchId),
   ],
 );
 

@@ -108,3 +108,17 @@
 ### D24 — Proiezioni: forecast puro deterministico
 **Scelta:** `forecast.ts` proietta i saldi futuri partendo dal saldo attuale + movimenti pianificati (ricorrenze espanse) + un delta mensile "what-if" opzionale. Funzioni pure e testate.
 **Perché:** logica critica isolata dall'I/O; gli scenari what-if sono semplici aggiustamenti deterministici, non previsioni statistiche (quelle eventualmente dopo).
+
+## 2026-06-14 — M6
+
+### D25 — Parsing CSV con `papaparse`
+**Scelta:** `papaparse` per il parsing dei CSV bancari (lato server, nelle server action).
+**Perché:** scelta del committente; robusto su delimitatori/virgolette/encoding reali.
+
+### D26 — Import reversibile via `import_batch` + `transaction.importBatchId`
+**Scelta:** l'import crea un `import_batch` e collega le transazioni con `transaction.import_batch_id`. Il revert cancella (soft-delete) le transazioni del batch e marca il batch `reverted`. NON persistiamo le righe grezze (`import_row`) come nello schema iniziale: il batch + il link sulle transazioni bastano per anteprima→commit→revert.
+**Perché:** flusso reversibile completo con meno tabelle/complessità. Le righe grezze si possono aggiungere se servirà rivedere un import non committato.
+
+### D27 — Deduplica per hash (data+importo+beneficiario)
+**Scelta:** ogni riga importata ha un `dedup_hash` = hash di (valueDate, amount, payee normalizzato). In anteprima si segnalano i duplicati rispetto alle transazioni esistenti e all'interno del batch; al commit i duplicati esatti vengono saltati.
+**Perché:** evita doppi inserimenti reimportando lo stesso estratto. Deterministico e testabile.

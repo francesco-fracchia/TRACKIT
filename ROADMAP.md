@@ -72,13 +72,14 @@
 **Done:** split senza perdita centesimi, saldi reciproci, compensazioni minime greedy, rimborsi. 85 unit + 5 e2e verdi.
 **Note:** split tra utenti registrati membri dello spazio (partecipanti non-utente non previsti, come discusso).
 
-## M6 — Import CSV
-- [ ] Upload CSV + **mappatura colonne salvabile per banca**
-- [ ] Anteprima + **deduplica**
-- [ ] **Categorizzazione** (regole automatiche + suggerimenti)
-- [ ] **Reversibilità** import (revert batch)
+## M6 — Import CSV ✅ (completata)
+- [x] Upload CSV (papaparse) + **mappatura colonne salvabile per banca** (preset)
+- [x] Anteprima + **deduplica** (hash data+importo+beneficiario)
+- [x] **Categorizzazione** automatica (regole contains/regex) + suggerimenti in anteprima
+- [x] **Reversibilità** import (batch + revert)
 
-**Done quando:** import affidabile, deduplicato, reversibile.
+**Done:** wizard upload→mappa→anteprima→importa; duplicati e righe invalide saltati; regole di categorizzazione; revert per batch. 97 unit + 5 e2e verdi (e2e import completo).
+**Note:** e2e ora gira su build di produzione (no cold-compile, stabile e veloce); righe grezze non persistite (vedi DECISIONS D26).
 
 ## M7 — Revisione mensile (l'"incontro")
 - [ ] Flusso guidato di **chiusura mensile**: snapshot numeri, scostamenti budget, transazioni non categorizzate da sistemare, obiettivi aggiornati

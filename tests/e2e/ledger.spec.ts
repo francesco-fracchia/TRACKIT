@@ -106,4 +106,21 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   await expect(
     page.locator("li").filter({ hasText: "Cena di gruppo" }).first(),
   ).toBeVisible();
+
+  // 14. Import CSV: upload → mappatura → anteprima → import.
+  await spaceNav.getByRole("link", { name: "Import", exact: true }).click();
+  const csvContent =
+    "Data;Importo;Descrizione\n10/03/2026;-25,50;Supermercato\n12/03/2026;1500,00;Stipendio\n";
+  await page.setInputFiles("#csv-file", {
+    name: "estratto.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from(csvContent),
+  });
+  await page.getByLabel("Colonna data").selectOption("Data");
+  await page.getByLabel("Colonna importo").selectOption("Importo");
+  await page.getByLabel("Colonna descrizione").selectOption("Descrizione");
+  await page.getByRole("button", { name: "Anteprima" }).click();
+  await expect(page.getByText("2 righe", { exact: false })).toBeVisible();
+  await page.getByRole("button", { name: /Importa 2/ }).click();
+  await expect(page.getByText("Importate 2 transazioni")).toBeVisible();
 });

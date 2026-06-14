@@ -30,6 +30,9 @@ const schema = z.object({
     .optional()
     .transform((v) => v !== "false"),
 
+  // Disabilita i cookie Secure (SOLO per e2e su http://localhost in build prod).
+  AUTH_DISABLE_SECURE_COOKIES: z.string().optional(),
+
   // Storage allegati (Vercel Blob). Se assente, gli upload sono disabilitati.
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
 

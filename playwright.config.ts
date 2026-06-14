@@ -20,11 +20,16 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "npm run dev",
+    // Build di produzione: route precompilate → niente cold-compile, e2e stabile.
+    command: "npm run build && npm run start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-    // Solo per i test: disabilita la verifica email così l'e2e può autenticarsi.
-    env: { ...process.env, AUTH_REQUIRE_EMAIL_VERIFICATION: "false" },
+    timeout: 240_000,
+    env: {
+      ...process.env,
+      // Solo per i test: la registrazione autentica subito e i cookie non sono Secure.
+      AUTH_REQUIRE_EMAIL_VERIFICATION: "false",
+      AUTH_DISABLE_SECURE_COOKIES: "true",
+    },
   },
 });

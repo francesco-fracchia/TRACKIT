@@ -50,6 +50,13 @@
       "when": 1781468900478,
       "tag": "0006_dizzy_rawhide_kid",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1781469561799,
+      "tag": "0007_bent_maverick",
+      "breakpoints": true
     }
   ]
 }
