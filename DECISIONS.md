@@ -58,3 +58,21 @@
 ### D13 — Ruolo `viewer` e access-control granulare differiti a M1
 **Scelta:** in M0 il plugin organization usa i ruoli nativi (owner/admin/member); il ruolo `viewer` e l'access-control fine verranno configurati in M1 con la UI di gestione membri. La gerarchia dei 4 ruoli è però già implementata e testata nel DAL (`roles.ts`).
 **Perché:** M0 non ha ancora UI membri; meglio configurare l'AC quando serve davvero, evitando astrazioni premature.
+
+## 2026-06-14 — M1
+
+### D14 — Allegati su Vercel Blob (confermato)
+**Scelta:** gli allegati delle transazioni usano **Vercel Blob** (`@vercel/blob`).
+**Perché:** scelta del committente. **Gating:** l'upload è abilitato solo se `BLOB_READ_WRITE_TOKEN` è presente; in locale senza token l'app funziona, semplicemente non permette upload. Servizio a consumo.
+
+### D15 — Categorie per-spazio (non globali) con seed
+**Scelta:** `category.organizationId` NOT NULL; alla creazione di uno spazio vengono seminate categorie di default (italiane). Niente categorie globali condivise.
+**Perché:** isolamento più semplice e pulito (ogni spazio possiede e può modificare le proprie categorie) senza righe "globali" speciali da gestire nelle query.
+
+### D16 — Importi con segno implicito dal `type`
+**Scelta:** `transaction.amount` è sempre positivo (intero, centesimi); il segno/effetto sul saldo è dato dal `type` (income +, expense −, transfer sposta da `accountId` a `counterAccountId`).
+**Perché:** evita ambiguità e doppia codifica del segno; i calcoli di saldo sono espliciti in `balances.ts`.
+
+### D17 — Spazio identificato in URL (`/[spaceId]/...`)
+**Scelta:** le route dell'area dati vivono sotto `/(app)/[spaceId]/...`; ogni pagina/azione verifica la membership con `requireSpaceMember(spaceId)`. L'`activeOrganizationId` di Better Auth non è la fonte di verità.
+**Perché:** URL espliciti e condivisibili; isolamento garantito dal DAL ad ogni richiesta.

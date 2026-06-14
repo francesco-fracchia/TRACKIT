@@ -8,6 +8,13 @@
       "when": 1781458098722,
       "tag": "0000_new_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1781459657177,
+      "tag": "0001_giant_monster_badoon",
+      "breakpoints": true
     }
   ]
 }
