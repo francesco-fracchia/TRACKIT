@@ -47,13 +47,14 @@
 **Done:** budget con avanzamento/sforamento e rollover testato; dashboard con grafici; export CSV e PDF mensile. 61 unit + 5 e2e verdi.
 **Note:** conversione multi-valuta nei totali ancora rinviata; scostamento mostrato come barre nella pagina Budget.
 
-## M3 — Pianificazione e previsioni
-- [ ] **Ricorrenze** (`recurring_rule`, RRULE): auto-post o suggerimento
-- [ ] Pianificazione mensile/annuale
-- [ ] **Proiezioni** saldi/cashflow + scenari what-if (`forecast.ts` + test)
-- [ ] Vista **calendario** scadenze
+## M3 — Pianificazione e previsioni ✅ (completata)
+- [x] **Ricorrenze** (`recurring_rule`, RRULE via `rrule`): auto-post o suggerimento
+- [x] Pianificazione: lista ricorrenze + prossime scadenze (60 gg) + "Registra scadute"
+- [x] **Proiezioni** saldi a 12 mesi + scenario what-if (`forecast.ts` + test)
+- [x] Vista scadenze imminenti (lista cronologica)
 
-**Done quando:** ricorrenze generano/suggeriscono transazioni e le proiezioni sono testate.
+**Done:** ricorrenze generano/suggeriscono transazioni (auto-post idempotente on-demand); proiezioni con what-if interattivo; espansione RRULE testata. 71 unit + 5 e2e verdi.
+**Note:** auto-post on-demand (niente cron — Vercel Cron come aggiunta futura); vista calendario a griglia → eventuale miglioria (ora lista).
 
 ## M4 — Obiettivi e patrimonio netto
 - [ ] **Obiettivi** di risparmio (avanzamento, data target, conto collegato)

@@ -67,4 +67,19 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   const pdf = await page.request.get(`/${spaceId}/export/report.pdf`);
   expect(pdf.status()).toBe(200);
   expect(pdf.headers()["content-type"]).toContain("application/pdf");
+
+  // 9. Crea una ricorrenza e verificala.
+  await spaceNav.getByRole("link", { name: "Pianificazione", exact: true }).click();
+  await page.getByLabel("Beneficiario").fill("Affitto");
+  await page.getByLabel("Importo").fill("500,00");
+  await page.getByRole("button", { name: "Aggiungi ricorrenza" }).click();
+  await expect(
+    page.locator("li").filter({ hasText: "Affitto" }).first(),
+  ).toBeVisible();
+
+  // 10. La pagina proiezioni si carica.
+  await spaceNav.getByRole("link", { name: "Proiezioni", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Proiezioni" }),
+  ).toBeVisible();
 });

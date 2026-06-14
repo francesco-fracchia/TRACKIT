@@ -94,3 +94,17 @@
 ### D21 — Budget come target ricorrente per categoria
 **Scelta:** un budget è (categoria, periodType `monthly|annual`, importo, rollover). Si applica ad ogni periodo del tipo scelto; lo "speso" è calcolato per il periodo selezionato. Il rollover porta l'inutilizzato al periodo successivo.
 **Perché:** modello semplice e familiare (cap per categoria) che copre mensile/annuale senza una riga per ogni singolo mese. La logica è pura e testata in `budget.ts`.
+
+## 2026-06-14 — M3
+
+### D22 — Ricorrenze con `rrule` (RFC 5545)
+**Scelta:** la libreria `rrule` per definire ed espandere le ricorrenze. Wrapper in `lib/recurrence.ts` (build della stringa rule + espansione in un intervallo, in UTC).
+**Perché:** scelta del committente; standard RFC 5545 robusto, evita bug di calcolo date fatti a mano.
+
+### D23 — Auto-post ricorrenze on-demand (niente cron in M3)
+**Scelta:** le ricorrenze in modalità `auto_post` generano transazioni quando l'utente apre la pianificazione / preme "Registra scadute" (azione manuale). Niente job schedulato in M3.
+**Perché:** Vercel serverless non ha un processo persistente; un cron (Vercel Cron / route protetta) è un'aggiunta successiva. Per ora il posting avviene al caricamento della pagina pianificazione (idempotente: avanza `lastRunAt`).
+
+### D24 — Proiezioni: forecast puro deterministico
+**Scelta:** `forecast.ts` proietta i saldi futuri partendo dal saldo attuale + movimenti pianificati (ricorrenze espanse) + un delta mensile "what-if" opzionale. Funzioni pure e testate.
+**Perché:** logica critica isolata dall'I/O; gli scenari what-if sono semplici aggiustamenti deterministici, non previsioni statistiche (quelle eventualmente dopo).
