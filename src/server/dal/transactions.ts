@@ -265,6 +265,50 @@ export async function listTransactions(
   };
 }
 
+export interface ExportRow {
+  valueDate: string;
+  type: TransactionType;
+  payee: string | null;
+  categoryName: string | null;
+  accountName: string | null;
+  counterAccountName: string | null;
+  amount: number;
+  currency: string;
+  note: string | null;
+}
+
+/** Tutte le transazioni dello spazio (per export CSV/PDF), ordinate per data. */
+export async function exportTransactions(
+  spaceId: string,
+): Promise<ExportRow[]> {
+  await requireSpaceMember(spaceId);
+  const counterAccount = alias(financialAccount, "counter_account");
+  const rows = await db
+    .select({
+      valueDate: transaction.valueDate,
+      type: transaction.type,
+      payee: transaction.payee,
+      categoryName: category.name,
+      accountName: financialAccount.name,
+      counterAccountName: counterAccount.name,
+      amount: transaction.amount,
+      currency: transaction.currency,
+      note: transaction.note,
+    })
+    .from(transaction)
+    .leftJoin(financialAccount, eq(transaction.accountId, financialAccount.id))
+    .leftJoin(counterAccount, eq(transaction.counterAccountId, counterAccount.id))
+    .leftJoin(category, eq(transaction.categoryId, category.id))
+    .where(
+      and(
+        eq(transaction.organizationId, spaceId),
+        isNull(transaction.deletedAt),
+      ),
+    )
+    .orderBy(desc(transaction.valueDate), desc(transaction.bookedAt));
+  return rows;
+}
+
 /** Soft-delete di una transazione. Ruolo >= member (chi crea può cancellare). */
 export async function softDeleteTransaction(
   spaceId: string,

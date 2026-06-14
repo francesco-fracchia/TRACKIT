@@ -80,3 +80,17 @@
 ### D18 — Allegati: upload server action + Blob `public` con URL non indovinabile
 **Scelta:** upload via server action (`uploadAttachmentAction`) che valida tipo (PNG/JPEG/WEBP/PDF) e dimensione (max 5MB), salva su Vercel Blob con `access: "public"` e chiave random per-spazio. L'`attachmentId` viene poi collegato alla transazione (verifica appartenenza allo spazio).
 **Perché:** semplice e robusto. **Limite noto:** l'URL Blob è pubblico ma non indovinabile; per ricevute sensibili un accesso firmato/privato è un miglioramento futuro (Blob private access). L'upload è disabilitato se manca `BLOB_READ_WRITE_TOKEN` (l'app resta usabile).
+
+## 2026-06-14 — M2
+
+### D19 — Rate limiting: Better Auth integrato, storage DB
+**Scelta:** usato il rate limiting integrato di Better Auth (non la `lib/rate-limit` custom) per gli endpoint auth, con `storage: "database"`.
+**Perché:** copre tutti gli endpoint del catch-all `/api/auth/*` con regole per-path; lo storage DB è condiviso tra istanze serverless (Vercel) → niente Redis. `lib/rate-limit` resta per endpoint custom (es. import M6).
+
+### D20 — Grafici con Recharts; PDF con @react-pdf/renderer
+**Scelta:** **Recharts** per i grafici della dashboard; **@react-pdf/renderer** per i report PDF (oltre all'export CSV).
+**Perché:** scelte del committente. Recharts: componibile, leggero, React-native. @react-pdf/renderer: genera PDF server-side senza browser headless (no servizi esterni).
+
+### D21 — Budget come target ricorrente per categoria
+**Scelta:** un budget è (categoria, periodType `monthly|annual`, importo, rollover). Si applica ad ogni periodo del tipo scelto; lo "speso" è calcolato per il periodo selezionato. Il rollover porta l'inutilizzato al periodo successivo.
+**Perché:** modello semplice e familiare (cap per categoria) che copre mensile/annuale senza una riga per ogni singolo mese. La logica è pura e testata in `budget.ts`.

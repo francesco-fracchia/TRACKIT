@@ -8,6 +8,7 @@ const SECTIONS = [
   { slug: "dashboard", label: "Panoramica" },
   { slug: "accounts", label: "Conti" },
   { slug: "transactions", label: "Transazioni" },
+  { slug: "budgets", label: "Budget" },
   { slug: "members", label: "Membri" },
 ] as const;
 

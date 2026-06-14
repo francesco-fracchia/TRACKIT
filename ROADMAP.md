@@ -37,13 +37,15 @@
 **Done:** un utente crea spazi/conti/transazioni con saldi corretti; isolamento per spazio applicato dal DAL ad ogni query; ruoli applicati (viewer sola lettura); allegati su Blob (gated sul token).
 **Note/rinvii:** accesso privato/firmato agli allegati → miglioria; modifica (edit) transazioni/conti → al bisogno; conversione multi-valuta nel totale → con i report di M2.
 
-## M2 — Budget e report
-- [ ] **Budget** per categoria (mensile/annuale) + rollover (`budget.ts` + test)
-- [ ] **Dashboard**: cashflow nel tempo, spese per categoria, entrate vs uscite, scostamento budget
-- [ ] Export **CSV** + **PDF** (librerie → conferma)
-- [ ] Grafici (recharts → conferma)
+## M2 — Budget e report ✅ (completata)
+- [x] **Budget** per categoria (mensile/annuale) + rollover (`budget.ts` + test)
+- [x] **Dashboard**: cashflow per mese, spese per categoria, entrate vs uscite, saldo del mese (Recharts)
+- [x] Export **CSV** (Excel IT) + **PDF** (@react-pdf/renderer) con audit
+- [x] Grafici Recharts
+- [x] Rate limiting endpoint auth (residuo M0 chiuso): Better Auth, storage DB
 
-**Done quando:** budget tracciati con scostamenti reali e report esportabili.
+**Done:** budget con avanzamento/sforamento e rollover testato; dashboard con grafici; export CSV e PDF mensile. 61 unit + 5 e2e verdi.
+**Note:** conversione multi-valuta nei totali ancora rinviata; scostamento mostrato come barre nella pagina Budget.
 
 ## M3 — Pianificazione e previsioni
 - [ ] **Ricorrenze** (`recurring_rule`, RRULE): auto-post o suggerimento

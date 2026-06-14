@@ -51,4 +51,20 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   // 6. Il saldo del conto è ora 70,00 (100 − 30) nella dashboard.
   await page.goto(`/${spaceId}/dashboard`);
   await expect(page.getByText("70,00").first()).toBeVisible();
+
+  // 7. Crea un budget mensile e verificalo.
+  await page.goto(`/${spaceId}/budgets`);
+  await page.getByLabel("Categoria").selectOption({ label: "Svago" });
+  await page.getByLabel("Importo").fill("200,00");
+  await page.getByRole("button", { name: "Salva budget" }).click();
+  await expect(page.locator("li").filter({ hasText: "Svago" })).toBeVisible();
+
+  // 8. Gli export rispondono correttamente.
+  const csv = await page.request.get(`/${spaceId}/export/transactions.csv`);
+  expect(csv.status()).toBe(200);
+  expect(csv.headers()["content-type"]).toContain("text/csv");
+
+  const pdf = await page.request.get(`/${spaceId}/export/report.pdf`);
+  expect(pdf.status()).toBe(200);
+  expect(pdf.headers()["content-type"]).toContain("application/pdf");
 });

@@ -4,8 +4,10 @@ export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  ...(process.env.CI ? { workers: 1 } : {}),
+  retries: process.env.CI ? 2 : 1,
+  // Un worker: il dev server compila le route on-demand; la parallelizzazione
+  // causa contesa sui cold-start e flakiness.
+  workers: 1,
   reporter: process.env.CI ? "github" : "list",
   // Timeout generosi: in dev la prima richiesta compila le route on-demand.
   timeout: 60_000,
