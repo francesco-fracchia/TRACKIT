@@ -42,3 +42,7 @@ yarn-error.log*
 *.tsbuildinfo
 
 # drizzle local artifacts (migrations ARE committed; meta journal stays too)
+
+# local runtime artifacts
+dev.log
+cookies.txt
