@@ -97,4 +97,13 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   await spaceNav.getByRole("link", { name: "Patrimonio", exact: true }).click();
   await page.getByRole("button", { name: "Salva snapshot di oggi" }).click();
   await expect(page.getByText("Snapshot salvato")).toBeVisible();
+
+  // 13. Spesa condivisa (divisione equa, singolo membro).
+  await spaceNav.getByRole("link", { name: "Condivise", exact: true }).click();
+  await page.getByLabel("Descrizione").fill("Cena di gruppo");
+  await page.getByLabel("Totale").fill("40,00");
+  await page.getByRole("button", { name: "Aggiungi spesa" }).click();
+  await expect(
+    page.locator("li").filter({ hasText: "Cena di gruppo" }).first(),
+  ).toBeVisible();
 });

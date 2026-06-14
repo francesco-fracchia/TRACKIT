@@ -11,6 +11,7 @@ const SECTIONS = [
   { slug: "budgets", label: "Budget" },
   { slug: "goals", label: "Obiettivi" },
   { slug: "net-worth", label: "Patrimonio" },
+  { slug: "shared", label: "Condivise" },
   { slug: "planning", label: "Pianificazione" },
   { slug: "projections", label: "Proiezioni" },
   { slug: "members", label: "Membri" },

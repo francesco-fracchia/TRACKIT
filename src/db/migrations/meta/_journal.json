@@ -43,6 +43,13 @@
       "when": 1781468424840,
       "tag": "0005_open_redwing",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1781468900478,
+      "tag": "0006_dizzy_rawhide_kid",
+      "breakpoints": true
     }
   ]
 }

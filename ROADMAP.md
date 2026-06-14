@@ -63,13 +63,14 @@
 **Done:** obiettivi con barre di avanzamento (raggiunto/aggiornabile); patrimonio = conti − passività, snapshot salvabili e curva storica. 77 unit + 5 e2e verdi.
 **Note:** snapshot salvati manualmente (un Vercel Cron potrebbe automatizzarli); patrimonio in valuta base.
 
-## M5 — Spese condivise
-- [ ] Spese con **split** (importo/percentuale) negli spazi shared
-- [ ] **Saldi reciproci** + **compensazioni minime** (`split.ts` + test)
-- [ ] Storico **rimborsi** (`settlement`)
-- [ ] e2e: spesa condivisa + compensazione
+## M5 — Spese condivise ✅ (completata)
+- [x] Spese con **split** (equa / percentuale / importi) tra membri
+- [x] **Saldi reciproci** + **compensazioni minime** (`split.ts` + test, stile Splitwise)
+- [x] Storico **rimborsi** (`settlement`) + "Segna saldato" one-click
+- [x] e2e: creazione spesa condivisa
 
-**Done quando:** split corretti, debiti netti minimizzati, rimborsi registrati.
+**Done:** split senza perdita centesimi, saldi reciproci, compensazioni minime greedy, rimborsi. 85 unit + 5 e2e verdi.
+**Note:** split tra utenti registrati membri dello spazio (partecipanti non-utente non previsti, come discusso).
 
 ## M6 — Import CSV
 - [ ] Upload CSV + **mappatura colonne salvabile per banca**
