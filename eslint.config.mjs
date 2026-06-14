@@ -7,6 +7,7 @@ export default tseslint.config(
     ignores: [
       ".next/**",
       "node_modules/**",
+      "public/**",
       "src/db/migrations/**",
       "playwright-report/**",
       "test-results/**",

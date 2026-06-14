@@ -6,23 +6,24 @@
 
 ---
 
-## M0 — Fondamenta
+## M0 — Fondamenta ✅ (completata)
 **Obiettivo:** scheletro sicuro e installabile su cui costruire. App che parte, ti registri, verifichi email, fai login con 2FA, dark mode, IT.
 
-- [ ] Scaffold Next.js 15 + TS strict + Tailwind + shadcn/ui
-- [ ] Config Turso + Drizzle + prima migrazione (tabelle identità + `space`, `space_member`, `audit_log`)
-- [ ] Better Auth: email/password (argon2id), verifica email, reset, **2FA TOTP**
-- [ ] DAL: `requireUser`, `requireSpaceMember(spaceId, minRole)` + test
-- [ ] `lib/money` (tipo Money, parse/format/arith IT) + **unit test**
-- [ ] `lib/crypto` AES-256-GCM + test; `lib/audit`; `lib/rate-limit` (astrazione + in-memory)
-- [ ] `middleware.ts`: security headers (CSP nonce, HSTS, ecc.) + locale + guard sessione
-- [ ] i18n next-intl (IT) + dark mode + shell app (sidebar, space switcher placeholder)
-- [ ] PWA: manifest + service worker base
-- [ ] `.env.example` documentato
-- [ ] Setup Vitest + Playwright + CI (lint, typecheck, test, build)
-- [ ] `DECISIONS.md` avviato
+- [x] Scaffold Next.js **16** + TS strict + Tailwind v4 + shadcn/ui
+- [x] Config Turso + Drizzle + prima migrazione (identità Better Auth + org/membri + `space_profile`, `audit_log`)
+- [x] Better Auth: email/password (**argon2id**), verifica email, reset, **2FA TOTP**, plugin organization
+- [x] DAL: `requireUser`, `requireSpaceMember(orgId, minRole)` + gerarchia ruoli testata (fail-closed)
+- [x] `lib/money` (tipo Money, parse/format/arith IT) + **unit test**
+- [x] `lib/crypto` AES-256-GCM + test; `lib/audit`; `lib/rate-limit` (astrazione + in-memory)
+- [x] `proxy.ts` (ex middleware, Next 16): security headers (**CSP nonce**, HSTS, ecc.) + guard sessione (nel layout app)
+- [x] i18n next-intl (IT) + dark mode + shell area autenticata
+- [x] PWA: manifest + service worker base (installabile)
+- [x] `.env.example` documentato
+- [x] Setup Vitest (43 test) + Playwright (4 e2e) + CI (lint, typecheck, test, build, e2e)
+- [x] `DECISIONS.md` avviato (D1–D13)
 
-**Done quando:** registrazione→verifica→login→2FA funziona e2e; headers attivi; CI verde.
+**Done:** registrazione→verifica email→login funziona (verificato a runtime); 2FA TOTP attivabile dalle impostazioni; cookie HttpOnly+SameSite=Lax; CSP nonce per-richiesta; CI configurata.
+**Note/rinvii:** ruolo `viewer` + access-control granulare → M1; provider email reale → da confermare; QR per il 2FA (ora mostra la chiave testuale) → miglioria UI.
 
 ## M1 — Ledger core
 - [ ] CRUD **spazi** (personal/business/shared) + impostazioni; campi extra business

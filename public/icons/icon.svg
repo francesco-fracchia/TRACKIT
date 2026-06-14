@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="TRACKIT">
+  <rect width="512" height="512" rx="112" fill="#0a0a0a"/>
+  <g stroke="#22c55e" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <polyline points="104,328 200,248 296,296 408,168"/>
+    <polyline points="360,168 408,168 408,216"/>
+  </g>
+  <g fill="#fafafa">
+    <rect x="120" y="372" width="40" height="40" rx="8"/>
+    <rect x="236" y="372" width="40" height="40" rx="8"/>
+    <rect x="352" y="372" width="40" height="40" rx="8"/>
+  </g>
+</svg>
