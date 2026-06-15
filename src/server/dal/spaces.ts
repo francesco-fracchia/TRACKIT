@@ -13,6 +13,7 @@ import {
 import { newId } from "@/lib/id";
 import { DEFAULT_CATEGORIES } from "@/server/services/default-categories";
 import { requireUser, requireSpaceMember } from "./context";
+import { listAccounts } from "./accounts";
 import type { Role } from "./roles";
 
 export interface SpaceSummary {
@@ -58,6 +59,29 @@ export async function listMySpaces(): Promise<SpaceSummary[]> {
     type: r.type ?? "personal",
     baseCurrency: r.baseCurrency ?? "EUR",
   }));
+}
+
+export interface SpaceWithTotal extends SpaceSummary {
+  /** Saldo totale nella valuta base dello spazio (centesimi). */
+  totalBalance: number;
+  accountCount: number;
+}
+
+/**
+ * Tutti gli spazi dell'utente con il saldo totale calcolato per ciascuno
+ * (somma dei conti nella valuta base dello spazio). Per la vista d'insieme.
+ */
+export async function listMySpacesWithTotals(): Promise<SpaceWithTotal[]> {
+  const spaces = await listMySpaces();
+  return Promise.all(
+    spaces.map(async (s) => {
+      const accounts = await listAccounts(s.id);
+      const totalBalance = accounts
+        .filter((a) => a.currency === s.baseCurrency)
+        .reduce((sum, a) => sum + a.balance, 0);
+      return { ...s, totalBalance, accountCount: accounts.length };
+    }),
+  );
 }
 
 export interface CreateSpaceInput {
