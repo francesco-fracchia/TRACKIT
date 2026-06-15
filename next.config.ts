@@ -5,8 +5,8 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // @react-pdf/renderer è node-only (font/layout): non va bundlato dal server.
-  serverExternalPackages: ["@react-pdf/renderer"],
+  // Pacchetti node-only: non vanno bundlati dal server.
+  serverExternalPackages: ["@react-pdf/renderer", "nodemailer"],
   // Security headers that don't need a per-request nonce live here.
   // The nonce-based CSP is set in middleware.ts (it must be dynamic per request).
   // HSTS is only meaningful over HTTPS; harmless in dev.

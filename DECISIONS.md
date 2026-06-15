@@ -122,3 +122,9 @@
 ### D27 — Deduplica per hash (data+importo+beneficiario)
 **Scelta:** ogni riga importata ha un `dedup_hash` = hash di (valueDate, amount, payee normalizzato). In anteprima si segnalano i duplicati rispetto alle transazioni esistenti e all'interno del batch; al commit i duplicati esatti vengono saltati.
 **Perché:** evita doppi inserimenti reimportando lo stesso estratto. Deterministico e testabile.
+
+## 2026-06-14 — Deploy & email
+
+### D28 — Email via SMTP (nodemailer), provider-agnostico
+**Scelta:** `sendEmail` invia tramite SMTP con `nodemailer` quando sono presenti `SMTP_HOST/PORT/USER/PASSWORD`; altrimenti logga in console (dev). Nessun SDK proprietario.
+**Perché:** il committente vuole una soluzione gratuita e non vincolante. SMTP funziona con qualunque provider free (Brevo 300/giorno senza dominio, Gmail, Resend SMTP, …) cambiando solo le env. Firebase scartato: non è un servizio SMTP. `nodemailer` in `serverExternalPackages` (node-only). Modulo senza `server-only` perché caricato anche dalla CLI `auth:generate` (vedi D10).
