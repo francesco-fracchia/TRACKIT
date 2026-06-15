@@ -136,4 +136,13 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: "Riapri revisione" }),
   ).toBeVisible();
+
+  // 16. Elimina lo spazio (conferma col nome) → torna alla lista, niente spazio.
+  await page.goto(`/${spaceId}/settings`);
+  await page
+    .getByLabel(/digita il nome dello spazio/i)
+    .fill("Spazio Test");
+  await page.getByRole("button", { name: "Elimina definitivamente" }).click();
+  await expect(page).toHaveURL(/\/spaces$/);
+  await expect(page.getByText("Spazio Test")).toHaveCount(0);
 });

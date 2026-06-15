@@ -1,8 +1,9 @@
 import "server-only";
 import { headers } from "next/headers";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { auth } from "@/auth";
 import { db } from "@/db";
+import * as schema from "@/db/schema";
 import {
   category,
   member,
@@ -157,4 +158,69 @@ export async function getSpace(spaceId: string): Promise<SpaceDetail> {
     baseCurrency: row.baseCurrency ?? "EUR",
     settings: row.settings ?? {},
   };
+}
+
+/**
+ * Elimina DEFINITIVAMENTE uno spazio e tutti i suoi dati. Solo l'owner.
+ * Cancellazione esplicita e deterministica (non ci affidiamo al cascade del
+ * DB: su Turso l'enforcement delle FK non è garantito). Atomica via transaction.
+ * Gli audit log NON vengono cancellati (storico immutabile).
+ */
+export async function deleteSpace(spaceId: string): Promise<void> {
+  await requireSpaceMember(spaceId, "owner");
+
+  await db.transaction(async (tx) => {
+    // 1. Tabelle figlie senza organizationId (via i rispettivi padri dello spazio).
+    await tx.delete(schema.transactionTag).where(
+      inArray(
+        schema.transactionTag.transactionId,
+        tx
+          .select({ id: schema.transaction.id })
+          .from(schema.transaction)
+          .where(eq(schema.transaction.organizationId, spaceId)),
+      ),
+    );
+    await tx.delete(schema.expense_split).where(
+      inArray(
+        schema.expense_split.sharedExpenseId,
+        tx
+          .select({ id: schema.shared_expense.id })
+          .from(schema.shared_expense)
+          .where(eq(schema.shared_expense.organizationId, spaceId)),
+      ),
+    );
+    await tx.delete(schema.reviewActionItem).where(
+      inArray(
+        schema.reviewActionItem.reviewId,
+        tx
+          .select({ id: schema.monthlyReview.id })
+          .from(schema.monthlyReview)
+          .where(eq(schema.monthlyReview.organizationId, spaceId)),
+      ),
+    );
+
+    // 2. Tabelle di dominio con organizationId.
+    await tx.delete(schema.transaction).where(eq(schema.transaction.organizationId, spaceId));
+    await tx.delete(schema.attachment).where(eq(schema.attachment.organizationId, spaceId));
+    await tx.delete(schema.recurringRule).where(eq(schema.recurringRule.organizationId, spaceId));
+    await tx.delete(schema.budget).where(eq(schema.budget.organizationId, spaceId));
+    await tx.delete(schema.settlement).where(eq(schema.settlement.organizationId, spaceId));
+    await tx.delete(schema.shared_expense).where(eq(schema.shared_expense.organizationId, spaceId));
+    await tx.delete(schema.netWorthSnapshot).where(eq(schema.netWorthSnapshot.organizationId, spaceId));
+    await tx.delete(schema.liability).where(eq(schema.liability.organizationId, spaceId));
+    await tx.delete(schema.goal).where(eq(schema.goal.organizationId, spaceId));
+    await tx.delete(schema.monthlyReview).where(eq(schema.monthlyReview.organizationId, spaceId));
+    await tx.delete(schema.categoryRule).where(eq(schema.categoryRule.organizationId, spaceId));
+    await tx.delete(schema.importMappingPreset).where(eq(schema.importMappingPreset.organizationId, spaceId));
+    await tx.delete(schema.importBatch).where(eq(schema.importBatch.organizationId, spaceId));
+    await tx.delete(schema.tag).where(eq(schema.tag.organizationId, spaceId));
+    await tx.delete(schema.category).where(eq(schema.category.organizationId, spaceId));
+    await tx.delete(schema.financialAccount).where(eq(schema.financialAccount.organizationId, spaceId));
+    await tx.delete(schema.spaceProfile).where(eq(schema.spaceProfile.organizationId, spaceId));
+
+    // 3. Membership/inviti e infine l'organizzazione.
+    await tx.delete(schema.invitation).where(eq(schema.invitation.organizationId, spaceId));
+    await tx.delete(schema.member).where(eq(schema.member.organizationId, spaceId));
+    await tx.delete(schema.organization).where(eq(schema.organization.id, spaceId));
+  });
 }

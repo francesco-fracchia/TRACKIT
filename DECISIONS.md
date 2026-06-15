@@ -132,3 +132,7 @@
 ### D29 — Verifica email disattivata di default (scelta committente)
 **Scelta:** `AUTH_REQUIRE_EMAIL_VERIFICATION` ora default **false**: registrazione e accesso sono immediati (nessuna mail di verifica). Riattivabile con env `="true"`. La pagina di sign-up, se la registrazione autentica subito (token presente), reindirizza a `/spaces` invece di mostrare "controlla la tua email".
 **Perché:** richiesta esplicita del committente per semplificare l'onboarding (D7/M0 prevedeva la verifica obbligatoria — questa decisione la supera consapevolmente). **Trade-off di sicurezza:** senza verifica chiunque può registrarsi con un'email non sua; resta consigliato riattivarla in produzione una volta configurato un SMTP. Reset password e inviti continuano a usare l'email quando l'SMTP è presente.
+
+### D30 — Eliminazione spazio: hard delete, owner-only, cancellazione esplicita
+**Scelta:** `/[spaceId]/settings` → "Zona pericolosa" con eliminazione definitiva, abilitata solo digitando il nome esatto dello spazio; il DAL `deleteSpace` richiede ruolo **owner** e cancella esplicitamente, in una transaction, tutte le tabelle dello spazio (incluse le figlie senza organizationId: transaction_tag, expense_split, review_action_item), poi member/invitation/organization. Gli audit log NON vengono cancellati.
+**Perché:** richiesta del committente. Cancellazione esplicita (non solo `onDelete: cascade`) perché su Turso l'enforcement delle foreign key non è garantito a runtime → evita dati orfani. Conferma forte (type-to-confirm) per un'azione irreversibile.

@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSpaceSchema, type CreateSpaceFormInput } from "@/lib/validation/space";
-import { createSpace } from "@/server/dal/spaces";
+import { createSpace, deleteSpace, getSpace } from "@/server/dal/spaces";
 import { requireUser } from "@/server/dal/context";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp } from "@/lib/request";
@@ -41,4 +41,36 @@ export async function createSpaceAction(
   });
 
   redirect(`/${spaceId}/dashboard`);
+}
+
+/**
+ * Elimina definitivamente uno spazio. Richiede che il nome digitato combaci
+ * (conferma esplicita) e — nel DAL — il ruolo owner. Reindirizza alla lista.
+ */
+export async function deleteSpaceAction(
+  spaceId: string,
+  confirmName: string,
+): Promise<ActionError | never> {
+  const ctx = await requireUser();
+  const space = await getSpace(spaceId); // verifica membership + recupera nome
+
+  if (confirmName.trim() !== space.name) {
+    return { error: "Il nome digitato non corrisponde" };
+  }
+
+  const h = await headers();
+  await writeAuditLog({
+    action: "space.deleted",
+    actorUserId: ctx.userId,
+    organizationId: spaceId,
+    entityType: "space",
+    entityId: spaceId,
+    metadata: { name: space.name, type: space.type },
+    ip: getClientIp(h),
+    userAgent: h.get("user-agent") ?? undefined,
+  });
+
+  await deleteSpace(spaceId); // verifica owner + cancellazione completa
+
+  redirect("/spaces");
 }

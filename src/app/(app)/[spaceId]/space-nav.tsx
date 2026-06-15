@@ -17,6 +17,7 @@ const SECTIONS = [
   { slug: "import", label: "Import" },
   { slug: "reviews", label: "Revisioni" },
   { slug: "members", label: "Membri" },
+  { slug: "settings", label: "Impostazioni" },
 ] as const;
 
 export function SpaceNav({ spaceId }: { spaceId: string }) {
