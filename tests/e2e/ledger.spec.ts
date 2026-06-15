@@ -38,7 +38,7 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   await page.getByLabel("Saldo iniziale").fill("100,00");
   await page.getByRole("button", { name: "Aggiungi conto" }).click();
   await expect(page.getByText("Contante")).toBeVisible();
-  await expect(page.getByText("100,00")).toBeVisible();
+  await expect(page.getByText("100,00").first()).toBeVisible();
 
   // 5. Registra un'uscita di 30,00.
   await spaceNav.getByRole("link", { name: "Transazioni", exact: true }).click();

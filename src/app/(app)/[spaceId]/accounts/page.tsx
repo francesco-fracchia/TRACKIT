@@ -1,6 +1,15 @@
+import {
+  Landmark,
+  Wallet,
+  CreditCard,
+  Smartphone,
+  PiggyBank,
+  type LucideIcon,
+} from "lucide-react";
 import { listAccounts } from "@/server/dal/accounts";
 import { getSpace } from "@/server/dal/spaces";
 import { formatMoney, money } from "@/lib/money";
+import type { AccountType } from "@/db/schema";
 import {
   Card,
   CardContent,
@@ -10,12 +19,20 @@ import {
 } from "@/components/ui/card";
 import { CreateAccountForm } from "./create-account-form";
 
-const TYPE_LABELS: Record<string, string> = {
+const TYPE_LABELS: Record<AccountType, string> = {
   bank: "Banca",
   cash: "Contanti",
   card: "Carta",
   ewallet: "E-wallet",
   other: "Altro",
+};
+
+const TYPE_ICONS: Record<AccountType, LucideIcon> = {
+  bank: Landmark,
+  cash: Wallet,
+  card: CreditCard,
+  ewallet: Smartphone,
+  other: PiggyBank,
 };
 
 export default async function AccountsPage({
@@ -29,32 +46,62 @@ export default async function AccountsPage({
     listAccounts(spaceId),
   ]);
 
+  const currency = space.baseCurrency;
+  const total = accounts
+    .filter((a) => a.currency === currency)
+    .reduce((sum, a) => sum + a.balance, 0);
+
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Conti</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Conti</h2>
+          {accounts.length > 0 && (
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Saldo totale</p>
+              <p
+                className={`font-mono text-lg font-semibold tabular-nums ${total < 0 ? "text-destructive" : ""}`}
+              >
+                {formatMoney(money(total, currency))}
+              </p>
+            </div>
+          )}
+        </div>
+
         {accounts.length === 0 ? (
           <p className="text-muted-foreground">
             Nessun conto. Aggiungine uno per iniziare a registrare transazioni.
           </p>
         ) : (
-          <ul className="divide-y rounded-lg border">
-            {accounts.map((a) => (
-              <li
-                key={a.id}
-                className="flex items-center justify-between px-4 py-3"
-              >
-                <div>
-                  <p className="font-medium">{a.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {TYPE_LABELS[a.type] ?? a.type} · {a.currency}
-                  </p>
-                </div>
-                <span className="font-mono tabular-nums">
-                  {formatMoney(money(a.balance, a.currency))}
-                </span>
-              </li>
-            ))}
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {accounts.map((a) => {
+              const Icon = TYPE_ICONS[a.type] ?? PiggyBank;
+              const negative = a.balance < 0;
+              return (
+                <li key={a.id}>
+                  <Card className="h-full">
+                    <CardContent className="flex h-full flex-col gap-3 p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                          <Icon className="size-5" aria-hidden />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{a.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {TYPE_LABELS[a.type] ?? a.type} · {a.currency}
+                          </p>
+                        </div>
+                      </div>
+                      <p
+                        className={`mt-auto font-mono text-2xl font-semibold tabular-nums ${negative ? "text-destructive" : ""}`}
+                      >
+                        {formatMoney(money(a.balance, a.currency))}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
