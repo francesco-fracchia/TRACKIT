@@ -38,12 +38,14 @@ export function CreateTransactionForm({
   categories,
   today,
   attachmentsEnabled,
+  payees = [],
 }: {
   spaceId: string;
   accounts: AccountOpt[];
   categories: CategoryOpt[];
   today: string;
   attachmentsEnabled: boolean;
+  payees?: string[];
 }) {
   const [serverError, setServerError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -208,7 +210,18 @@ export function CreateTransactionForm({
         </div>
         <div className="space-y-2">
           <Label htmlFor="tx-payee">Beneficiario / Pagatore</Label>
-          <Input id="tx-payee" placeholder="Es. Supermercato" {...register("payee")} />
+          <Input
+            id="tx-payee"
+            placeholder="Es. Supermercato"
+            list="tx-payees"
+            autoComplete="off"
+            {...register("payee")}
+          />
+          <datalist id="tx-payees">
+            {payees.map((p) => (
+              <option key={p} value={p} />
+            ))}
+          </datalist>
         </div>
       </div>
 

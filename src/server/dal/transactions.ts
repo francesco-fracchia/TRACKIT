@@ -5,9 +5,11 @@ import {
   desc,
   eq,
   gte,
+  isNotNull,
   isNull,
   like,
   lte,
+  ne,
   or,
   inArray,
 } from "drizzle-orm";
@@ -311,6 +313,25 @@ export async function exportTransactions(
     )
     .orderBy(desc(transaction.valueDate), desc(transaction.bookedAt));
   return rows;
+}
+
+/** Beneficiari/pagatori già usati nello spazio (per l'autocomplete). */
+export async function listPayees(spaceId: string): Promise<string[]> {
+  await requireSpaceMember(spaceId);
+  const rows = await db
+    .selectDistinct({ payee: transaction.payee })
+    .from(transaction)
+    .where(
+      and(
+        eq(transaction.organizationId, spaceId),
+        isNull(transaction.deletedAt),
+        isNotNull(transaction.payee),
+        ne(transaction.payee, ""),
+      ),
+    )
+    .orderBy(transaction.payee)
+    .limit(500);
+  return rows.map((r) => r.payee).filter((p): p is string => Boolean(p));
 }
 
 /** Soft-delete di una transazione. Ruolo >= member (chi crea può cancellare). */

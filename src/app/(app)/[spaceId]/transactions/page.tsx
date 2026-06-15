@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { Paperclip } from "lucide-react";
 import { listAccountOptions } from "@/server/dal/accounts";
@@ -5,10 +6,13 @@ import { listCategories } from "@/server/dal/categories";
 import { attachmentsEnabled } from "@/server/dal/attachments";
 import {
   listTransactions,
+  listPayees,
   type TransactionFilter,
+  type TransactionRow,
 } from "@/server/dal/transactions";
 import type { TransactionType } from "@/db/schema";
 import { formatMoney, money } from "@/lib/money";
+import { formatDateLong } from "@/lib/period";
 import {
   Card,
   CardContent,
@@ -65,13 +69,22 @@ export default async function TransactionsPage({
     page: Number(str(sp.page) ?? "1") || 1,
   };
 
-  const [accounts, categories, result] = await Promise.all([
+  const [accounts, categories, result, payees] = await Promise.all([
     listAccountOptions(spaceId),
     listCategories(spaceId),
     listTransactions(spaceId, filter),
+    listPayees(spaceId),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.pageSize));
+
+  // Raggruppa le transazioni per giorno (sono già ordinate per data desc).
+  const groups: { date: string; rows: TransactionRow[] }[] = [];
+  for (const row of result.rows) {
+    const last = groups[groups.length - 1];
+    if (last && last.date === row.valueDate) last.rows.push(row);
+    else groups.push({ date: row.valueDate, rows: [row] });
+  }
 
   function pageHref(page: number): string {
     const q = new URLSearchParams();
@@ -131,7 +144,6 @@ export default async function TransactionsPage({
             <table className="w-full text-sm">
               <thead className="border-b bg-muted/50 text-left text-xs text-muted-foreground">
                 <tr>
-                  <th className="px-3 py-2 font-medium">Data</th>
                   <th className="px-3 py-2 font-medium">Descrizione</th>
                   <th className="px-3 py-2 font-medium">Conto</th>
                   <th className="px-3 py-2 text-right font-medium">Importo</th>
@@ -139,60 +151,98 @@ export default async function TransactionsPage({
                 </tr>
               </thead>
               <tbody>
-                {result.rows.map((t) => {
-                  const sign =
-                    t.type === "income" ? 1 : t.type === "expense" ? -1 : 0;
-                  const amountColor =
-                    t.type === "income"
-                      ? "text-green-600 dark:text-green-500"
-                      : t.type === "expense"
-                        ? "text-destructive"
-                        : "text-muted-foreground";
+                {groups.map((group) => {
+                  // Totale del giorno (se i movimenti sono nella stessa valuta).
+                  const currencies = new Set(group.rows.map((r) => r.currency));
+                  const dayNet = group.rows.reduce(
+                    (s, r) =>
+                      s +
+                      (r.type === "income"
+                        ? r.amount
+                        : r.type === "expense"
+                          ? -r.amount
+                          : 0),
+                    0,
+                  );
+                  const dayCurrency = group.rows[0]?.currency ?? "EUR";
                   return (
-                    <tr key={t.id} className="border-b last:border-0">
-                      <td className="whitespace-nowrap px-3 py-2 tabular-nums">
-                        {t.valueDate}
-                      </td>
-                      <td className="px-3 py-2">
-                        <div className="flex items-center gap-1 font-medium">
-                          {t.payee || TYPE_LABELS[t.type]}
-                          {t.attachmentUrl && (
-                            <a
-                              href={t.attachmentUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label="Apri allegato"
-                              className="text-muted-foreground hover:text-foreground"
-                            >
-                              <Paperclip className="size-3.5" aria-hidden />
-                            </a>
-                          )}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {t.type === "transfer"
-                            ? `→ ${t.counterAccountName ?? ""}`
-                            : t.categoryName ?? "—"}
-                          {t.tags.length > 0 && ` · ${t.tags.join(", ")}`}
-                          {t.excludeFromBalance && (
-                            <span className="ml-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
-                              storico
+                    <Fragment key={group.date}>
+                      <tr className="border-b bg-muted/30">
+                        <td
+                          colSpan={3}
+                          className="px-3 py-1.5 text-xs font-semibold capitalize text-muted-foreground"
+                        >
+                          {formatDateLong(group.date)}
+                          {currencies.size === 1 && dayNet !== 0 && (
+                            <span className="ml-2 font-mono font-normal normal-case tabular-nums">
+                              ({dayNet > 0 ? "+" : "−"}
+                              {formatMoney(money(Math.abs(dayNet), dayCurrency))})
                             </span>
                           )}
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
-                        {t.accountName}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums ${amountColor}`}
-                      >
-                        {sign < 0 ? "−" : sign > 0 ? "+" : ""}
-                        {formatMoney(money(t.amount, t.currency))}
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <DeleteTransactionButton spaceId={spaceId} txId={t.id} />
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="bg-muted/30" />
+                      </tr>
+                      {group.rows.map((t) => {
+                        const sign =
+                          t.type === "income"
+                            ? 1
+                            : t.type === "expense"
+                              ? -1
+                              : 0;
+                        const amountColor =
+                          t.type === "income"
+                            ? "text-green-600 dark:text-green-500"
+                            : t.type === "expense"
+                              ? "text-destructive"
+                              : "text-muted-foreground";
+                        return (
+                          <tr key={t.id} className="border-b last:border-0">
+                            <td className="px-3 py-2">
+                              <div className="flex items-center gap-1 font-medium">
+                                {t.payee || TYPE_LABELS[t.type]}
+                                {t.attachmentUrl && (
+                                  <a
+                                    href={t.attachmentUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Apri allegato"
+                                    className="text-muted-foreground hover:text-foreground"
+                                  >
+                                    <Paperclip className="size-3.5" aria-hidden />
+                                  </a>
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {t.type === "transfer"
+                                  ? `→ ${t.counterAccountName ?? ""}`
+                                  : t.categoryName ?? "—"}
+                                {t.tags.length > 0 && ` · ${t.tags.join(", ")}`}
+                                {t.excludeFromBalance && (
+                                  <span className="ml-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+                                    storico
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
+                              {t.accountName}
+                            </td>
+                            <td
+                              className={`whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums ${amountColor}`}
+                            >
+                              {sign < 0 ? "−" : sign > 0 ? "+" : ""}
+                              {formatMoney(money(t.amount, t.currency))}
+                            </td>
+                            <td className="px-3 py-2 text-right">
+                              <DeleteTransactionButton
+                                spaceId={spaceId}
+                                txId={t.id}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </Fragment>
                   );
                 })}
               </tbody>
@@ -249,6 +299,7 @@ export default async function TransactionsPage({
               }))}
               today={todayISO()}
               attachmentsEnabled={attachmentsEnabled()}
+              payees={payees}
             />
           </CardContent>
         </Card>

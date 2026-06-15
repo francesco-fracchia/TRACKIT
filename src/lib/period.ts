@@ -57,3 +57,26 @@ export function shortMonthLabel(month: number): string {
 export function currentYearMonth(now: Date): { year: number; month: number } {
   return { year: now.getFullYear(), month: now.getMonth() + 1 };
 }
+
+const WEEKDAYS_IT = [
+  "domenica",
+  "lunedì",
+  "martedì",
+  "mercoledì",
+  "giovedì",
+  "venerdì",
+  "sabato",
+];
+
+/**
+ * Formatta una data civile YYYY-MM-DD in italiano leggibile,
+ * es. "venerdì 14 giugno 2026". Niente dipendenze da Intl/timezone.
+ */
+export function formatDateLong(ymd: string): string {
+  const parts = ymd.split("-").map(Number);
+  const y = parts[0] ?? 1970;
+  const m = parts[1] ?? 1;
+  const d = parts[2] ?? 1;
+  const weekday = new Date(y, m - 1, d).getDay();
+  return `${WEEKDAYS_IT[weekday] ?? ""} ${d} ${MONTH_NAMES_IT[m - 1] ?? ""} ${y}`;
+}
