@@ -54,7 +54,8 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
-    sendOnSignUp: true,
+    // Invia la mail di verifica solo se la verifica è effettivamente richiesta.
+    sendOnSignUp: serverEnv.AUTH_REQUIRE_EMAIL_VERIFICATION,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({

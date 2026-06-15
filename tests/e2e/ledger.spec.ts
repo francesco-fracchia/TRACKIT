@@ -8,16 +8,15 @@ import { test, expect } from "@playwright/test";
 test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   const email = `ledger-${Date.now()}@test.local`;
 
-  // 1. Registrazione (in e2e autentica direttamente).
+  // 1. Registrazione: senza verifica email autentica subito e porta agli spazi.
   await page.goto("/sign-up");
   await page.getByLabel("Nome").fill("Ledger Tester");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("password-ledger-123");
   await page.getByRole("button", { name: "Registrati" }).click();
-  await expect(page.getByText("Controlla la tua email")).toBeVisible();
 
   // 2. Area autenticata: hub spazi.
-  await page.goto("/spaces");
+  await expect(page).toHaveURL(/\/spaces/);
   await expect(
     page.getByRole("heading", { name: "I tuoi spazi" }),
   ).toBeVisible();

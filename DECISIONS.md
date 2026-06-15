@@ -128,3 +128,7 @@
 ### D28 — Email via SMTP (nodemailer), provider-agnostico
 **Scelta:** `sendEmail` invia tramite SMTP con `nodemailer` quando sono presenti `SMTP_HOST/PORT/USER/PASSWORD`; altrimenti logga in console (dev). Nessun SDK proprietario.
 **Perché:** il committente vuole una soluzione gratuita e non vincolante. SMTP funziona con qualunque provider free (Brevo 300/giorno senza dominio, Gmail, Resend SMTP, …) cambiando solo le env. Firebase scartato: non è un servizio SMTP. `nodemailer` in `serverExternalPackages` (node-only). Modulo senza `server-only` perché caricato anche dalla CLI `auth:generate` (vedi D10).
+
+### D29 — Verifica email disattivata di default (scelta committente)
+**Scelta:** `AUTH_REQUIRE_EMAIL_VERIFICATION` ora default **false**: registrazione e accesso sono immediati (nessuna mail di verifica). Riattivabile con env `="true"`. La pagina di sign-up, se la registrazione autentica subito (token presente), reindirizza a `/spaces` invece di mostrare "controlla la tua email".
+**Perché:** richiesta esplicita del committente per semplificare l'onboarding (D7/M0 prevedeva la verifica obbligatoria — questa decisione la supera consapevolmente). **Trade-off di sicurezza:** senza verifica chiunque può registrarsi con un'email non sua; resta consigliato riattivarla in produzione una volta configurato un SMTP. Reset password e inviti continuano a usare l'email quando l'SMTP è presente.

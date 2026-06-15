@@ -29,12 +29,12 @@ const schema = z.object({
 
   ENCRYPTION_KEY: z.string().min(1, "ENCRYPTION_KEY mancante"),
 
-  // Verifica email obbligatoria (default true). Impostare "false" SOLO nei
-  // test e2e per poter autenticarsi senza intercettare l'email.
+  // Verifica email: DISATTIVATA di default (registrazione e accesso immediati).
+  // Per riattivarla imposta AUTH_REQUIRE_EMAIL_VERIFICATION="true".
   AUTH_REQUIRE_EMAIL_VERIFICATION: z
     .string()
     .optional()
-    .transform((v) => v !== "false"),
+    .transform((v) => v === "true"),
 
   // Disabilita i cookie Secure (SOLO per e2e su http://localhost in build prod).
   AUTH_DISABLE_SECURE_COOKIES: z.string().optional(),

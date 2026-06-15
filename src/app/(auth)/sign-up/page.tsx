@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema, type SignUpInput } from "@/lib/validation/auth";
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/card";
 
 export default function SignUpPage() {
+  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const {
@@ -29,7 +31,7 @@ export default function SignUpPage() {
 
   async function onSubmit(values: SignUpInput) {
     setServerError(null);
-    const { error } = await authClient.signUp.email({
+    const { data, error } = await authClient.signUp.email({
       name: values.name,
       email: values.email,
       password: values.password,
@@ -37,6 +39,12 @@ export default function SignUpPage() {
     });
     if (error) {
       setServerError(error.message ?? "Registrazione fallita");
+      return;
+    }
+    // Se la verifica email è disattivata, la registrazione autentica subito
+    // (Better Auth restituisce un token): vai direttamente in app.
+    if (data && "token" in data && data.token) {
+      router.push("/spaces");
       return;
     }
     setDone(true);

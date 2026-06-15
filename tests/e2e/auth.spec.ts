@@ -14,7 +14,7 @@ test("una route protetta redirige al login se non autenticati", async ({
   await expect(page).toHaveURL(/\/sign-in/);
 });
 
-test("registrazione: mostra la schermata 'controlla la tua email'", async ({
+test("registrazione: autentica e porta agli spazi (verifica email disattivata)", async ({
   page,
 }) => {
   const email = `e2e-${Date.now()}@test.local`;
@@ -23,8 +23,9 @@ test("registrazione: mostra la schermata 'controlla la tua email'", async ({
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("password-e2e-123");
   await page.getByRole("button", { name: "Registrati" }).click();
+  await expect(page).toHaveURL(/\/spaces/);
   await expect(
-    page.getByText("Controlla la tua email", { exact: false }),
+    page.getByRole("heading", { name: "I tuoi spazi" }),
   ).toBeVisible();
 });
 
