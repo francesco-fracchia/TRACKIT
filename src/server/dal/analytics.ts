@@ -129,3 +129,66 @@ export async function cashflowByMonth(
   }
   return months;
 }
+
+export interface RevenueStats {
+  year: number;
+  /** Fatturato totale di sempre (tutte le entrate). */
+  totalAllTime: number;
+  /** Fatturato dell'anno selezionato. */
+  totalYear: number;
+  /** Fatturato per mese dell'anno selezionato. */
+  monthly: { month: number; income: number }[];
+  /** Anni con almeno un'entrata (per il selettore), decrescente. */
+  years: number[];
+}
+
+/**
+ * Statistiche di fatturato (entrate) per uno spazio: totale storico, totale
+ * dell'anno e ripartizione mensile. Le entrate "solo storico" SONO incluse
+ * (sono comunque fatturato), anche se non incidono sul saldo.
+ */
+export async function revenueStats(
+  spaceId: string,
+  year: number,
+): Promise<RevenueStats> {
+  await requireSpaceMember(spaceId);
+
+  const incomeFilter = and(
+    eq(transaction.organizationId, spaceId),
+    eq(transaction.type, "income"),
+    isNull(transaction.deletedAt),
+  );
+
+  const [allTimeRow, monthsByYear, monthly] = await Promise.all([
+    db.select({ total: sum(transaction.amount) }).from(transaction).where(incomeFilter),
+    // Anni distinti con entrate.
+    db
+      .select({
+        y: sql<string>`substr(${transaction.valueDate}, 1, 4)`,
+      })
+      .from(transaction)
+      .where(incomeFilter)
+      .groupBy(sql`substr(${transaction.valueDate}, 1, 4)`),
+    cashflowByMonth(spaceId, year),
+  ]);
+
+  const monthlyIncome = monthly.map((m) => ({
+    month: m.month,
+    income: m.income,
+  }));
+  const totalYear = monthlyIncome.reduce((s, m) => s + m.income, 0);
+
+  const years = monthsByYear
+    .map((r) => Number(r.y))
+    .filter((n) => Number.isFinite(n));
+  if (!years.includes(year)) years.push(year);
+  years.sort((a, b) => b - a);
+
+  return {
+    year,
+    totalAllTime: toCents(allTimeRow[0]?.total ?? null),
+    totalYear,
+    monthly: monthlyIncome,
+    years,
+  };
+}

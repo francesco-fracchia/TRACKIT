@@ -21,8 +21,9 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
     page.getByRole("heading", { name: "I tuoi spazi" }),
   ).toBeVisible();
 
-  // 3. Crea uno spazio → redirect alla dashboard dello spazio.
+  // 3. Crea uno spazio business → redirect alla dashboard dello spazio.
   await page.getByLabel("Nome dello spazio").fill("Spazio Test");
+  await page.getByLabel("Tipo").selectOption("business");
   await page.getByRole("button", { name: "Crea spazio" }).click();
   await expect(page).toHaveURL(/\/[^/]+\/dashboard$/);
   const spaceId = new URL(page.url()).pathname.split("/")[1]!;
@@ -143,6 +144,19 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: "Riapri revisione" }),
   ).toBeVisible();
+
+  // 15b. Fatturato (spazio business): registra un'entrata e verifica la sezione.
+  await spaceNav.getByRole("link", { name: "Transazioni", exact: true }).click();
+  await page.locator("#tx-type").selectOption("income");
+  await page.getByLabel("Importo").fill("200,00");
+  await page.getByRole("button", { name: "Aggiungi transazione" }).click();
+  await expect(page.locator("table")).toContainText("200,00");
+
+  await spaceNav.getByRole("link", { name: "Fatturato", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Fatturato", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator("table")).toContainText("200,00");
 
   // 16. Elimina lo spazio (conferma col nome) → torna alla lista, niente spazio.
   await page.goto(`/${spaceId}/settings`);

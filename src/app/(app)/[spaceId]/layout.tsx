@@ -44,7 +44,7 @@ export default async function SpaceLayout({
           </p>
         </div>
       </div>
-      <SpaceNav spaceId={spaceId} />
+      <SpaceNav spaceId={spaceId} isBusiness={space.type === "business"} />
       <div className="px-6 py-6">{children}</div>
     </div>
   );

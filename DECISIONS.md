@@ -140,3 +140,7 @@
 ### D31 — Movimenti "solo storico" (excludeFromBalance)
 **Scelta:** flag `transaction.exclude_from_balance` (default false). Se true, la transazione è inclusa in report/grafici (cashflow, spese per categoria, budget) ma **esclusa dal calcolo del saldo** (filtrata in `listAccounts`). Checkbox nel form transazione + badge "storico" in lista.
 **Perché:** richiesta del committente per inserire storico di mesi passati senza alterare il saldo attuale (anche storico parziale). Trade-off accettato: in quei periodi "entrate − uscite" non concilia con la variazione di saldo (dati informativi). Alternativa "coerente" (saldo iniziale storico + storico completo) non scelta.
+
+### D32 — Sezione "Fatturato" per gli spazi business
+**Scelta:** gli spazi di tipo `business` hanno una sezione **Fatturato** (`/[spaceId]/revenue`): totale storico, totale per anno selezionabile, media mensile e ripartizione per mese (grafico + tabella). Il tab compare nella nav solo se `space.type === "business"`. Il fatturato = somma delle **entrate** (`type=income`), incluse quelle "solo storico" (sono comunque fatturato).
+**Perché:** richiesta del committente; un'attività ha bisogno di un quadro sugli incassi distinto dal saldo. Nessuna nuova tabella: riusa le transazioni e l'analytics esistente. **Possibile estensione:** distinzione imponibile/IVA, fatturato per categoria/cliente.

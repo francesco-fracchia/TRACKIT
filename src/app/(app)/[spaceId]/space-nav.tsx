@@ -4,7 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-const SECTIONS = [
+interface Section {
+  slug: string;
+  label: string;
+}
+
+const SECTIONS: Section[] = [
   { slug: "dashboard", label: "Panoramica" },
   { slug: "accounts", label: "Conti" },
   { slug: "transactions", label: "Transazioni" },
@@ -18,17 +23,32 @@ const SECTIONS = [
   { slug: "reviews", label: "Revisioni" },
   { slug: "members", label: "Membri" },
   { slug: "settings", label: "Impostazioni" },
-] as const;
+];
 
-export function SpaceNav({ spaceId }: { spaceId: string }) {
+export function SpaceNav({
+  spaceId,
+  isBusiness = false,
+}: {
+  spaceId: string;
+  isBusiness?: boolean;
+}) {
   const pathname = usePathname();
+
+  // Il "Fatturato" è una sezione specifica degli spazi business.
+  const sections: Section[] = isBusiness
+    ? [
+        ...SECTIONS.slice(0, 3),
+        { slug: "revenue", label: "Fatturato" },
+        ...SECTIONS.slice(3),
+      ]
+    : SECTIONS;
 
   return (
     <nav
       aria-label="Sezioni dello spazio"
       className="flex gap-1 overflow-x-auto border-b px-6"
     >
-      {SECTIONS.map((s) => {
+      {sections.map((s) => {
         const href = `/${spaceId}/${s.slug}`;
         const active = pathname === href || pathname.startsWith(`${href}/`);
         return (
