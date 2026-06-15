@@ -48,6 +48,8 @@ export const createTransactionSchema = z
     note: z.string().trim().max(500).optional(),
     tags: z.array(z.string()).optional(),
     attachmentId: z.string().optional(),
+    /** Solo storico: incluso nei report ma escluso dal saldo. */
+    excludeFromBalance: z.boolean().optional(),
     // Solo per i trasferimenti:
     counterAccountId: z.string().optional(),
   })

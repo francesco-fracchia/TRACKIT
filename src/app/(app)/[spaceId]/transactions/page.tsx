@@ -173,6 +173,11 @@ export default async function TransactionsPage({
                             ? `→ ${t.counterAccountName ?? ""}`
                             : t.categoryName ?? "—"}
                           {t.tags.length > 0 && ` · ${t.tags.join(", ")}`}
+                          {t.excludeFromBalance && (
+                            <span className="ml-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+                              storico
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">

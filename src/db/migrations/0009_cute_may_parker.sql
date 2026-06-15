@@ -1,0 +1,1 @@
+ALTER TABLE `transaction` ADD `exclude_from_balance` integer DEFAULT false NOT NULL;

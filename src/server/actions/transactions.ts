@@ -55,6 +55,7 @@ export async function createTransactionAction(
     note: parsed.data.note || undefined,
     counterAccountId: parsed.data.counterAccountId || undefined,
     attachmentId: parsed.data.attachmentId || undefined,
+    excludeFromBalance: parsed.data.excludeFromBalance ?? false,
     tagNames: parsed.data.tags,
   });
 

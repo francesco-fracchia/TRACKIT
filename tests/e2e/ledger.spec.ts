@@ -47,7 +47,14 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   // La transazione compare nella tabella.
   await expect(page.locator("table")).toContainText("30,00");
 
-  // 6. Il saldo del conto è ora 70,00 (100 − 30) nella dashboard.
+  // 5b. Movimento "solo storico": NON deve incidere sul saldo.
+  await page.getByLabel("Importo").fill("999,00");
+  await page.getByRole("checkbox", { name: /Solo storico/ }).check();
+  await page.getByRole("button", { name: "Aggiungi transazione" }).click();
+  await expect(page.locator("table")).toContainText("999,00");
+  await expect(page.locator("table")).toContainText("storico");
+
+  // 6. Il saldo del conto è ancora 70,00 (100 − 30): il movimento storico è escluso.
   await page.goto(`/${spaceId}/dashboard`);
   await expect(page.getByText("70,00").first()).toBeVisible();
 

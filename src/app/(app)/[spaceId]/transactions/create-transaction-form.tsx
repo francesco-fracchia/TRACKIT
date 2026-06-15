@@ -226,6 +226,21 @@ export function CreateTransactionForm({
         <Input id="tx-note" {...register("note")} />
       </div>
 
+      <label className="flex items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          className="mt-0.5"
+          {...register("excludeFromBalance")}
+        />
+        <span>
+          Solo storico — non incide sul saldo
+          <span className="block text-xs text-muted-foreground">
+            Per inserire movimenti passati: compaiono nei grafici e report ma
+            non modificano il saldo del conto.
+          </span>
+        </span>
+      </label>
+
       {attachmentsEnabled && (
         <div className="space-y-2">
           <Label htmlFor="tx-file">Allegato (ricevuta, PDF/immagine)</Label>

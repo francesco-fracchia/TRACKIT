@@ -49,6 +49,8 @@ export async function listAccounts(
       and(
         eq(transaction.organizationId, spaceId),
         isNull(transaction.deletedAt),
+        // I movimenti "solo storico" non incidono sul saldo.
+        eq(transaction.excludeFromBalance, false),
       ),
     );
 

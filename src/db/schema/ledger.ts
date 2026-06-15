@@ -132,6 +132,10 @@ export const transaction = sqliteTable(
     }),
     payee: text("payee"),
     note: text("note"),
+    /** Se true: movimento "solo storico", incluso nei report ma escluso dal saldo. */
+    excludeFromBalance: integer("exclude_from_balance", { mode: "boolean" })
+      .notNull()
+      .default(false),
     attachmentId: text("attachment_id").references(() => attachment.id, {
       onDelete: "set null",
     }),

@@ -136,3 +136,7 @@
 ### D30 — Eliminazione spazio: hard delete, owner-only, cancellazione esplicita
 **Scelta:** `/[spaceId]/settings` → "Zona pericolosa" con eliminazione definitiva, abilitata solo digitando il nome esatto dello spazio; il DAL `deleteSpace` richiede ruolo **owner** e cancella esplicitamente, in una transaction, tutte le tabelle dello spazio (incluse le figlie senza organizationId: transaction_tag, expense_split, review_action_item), poi member/invitation/organization. Gli audit log NON vengono cancellati.
 **Perché:** richiesta del committente. Cancellazione esplicita (non solo `onDelete: cascade`) perché su Turso l'enforcement delle foreign key non è garantito a runtime → evita dati orfani. Conferma forte (type-to-confirm) per un'azione irreversibile.
+
+### D31 — Movimenti "solo storico" (excludeFromBalance)
+**Scelta:** flag `transaction.exclude_from_balance` (default false). Se true, la transazione è inclusa in report/grafici (cashflow, spese per categoria, budget) ma **esclusa dal calcolo del saldo** (filtrata in `listAccounts`). Checkbox nel form transazione + badge "storico" in lista.
+**Perché:** richiesta del committente per inserire storico di mesi passati senza alterare il saldo attuale (anche storico parziale). Trade-off accettato: in quei periodi "entrate − uscite" non concilia con la variazione di saldo (dati informativi). Alternativa "coerente" (saldo iniziale storico + storico completo) non scelta.
