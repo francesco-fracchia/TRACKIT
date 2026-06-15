@@ -1,15 +1,22 @@
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function HomePage() {
   const t = useTranslations("home");
+  const tAuth = useTranslations("auth");
 
   return (
     <main className="flex min-h-dvh flex-col">
       <header className="flex items-center justify-between border-b px-6 py-4">
         <span className="text-lg font-semibold tracking-tight">TRACKIT</span>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <Button asChild variant="ghost">
+            <Link href="/sign-in">{tAuth("signIn")}</Link>
+          </Button>
+          <ThemeToggle />
+        </div>
       </header>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 text-center">
@@ -19,7 +26,9 @@ export default function HomePage() {
         <p className="max-w-xl text-balance text-muted-foreground">
           {t("subheading")}
         </p>
-        <Button size="lg">{t("getStarted")}</Button>
+        <Button asChild size="lg">
+          <Link href="/sign-up">{t("getStarted")}</Link>
+        </Button>
       </div>
     </main>
   );
