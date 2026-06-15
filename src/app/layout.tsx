@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import NextTopLoader from "nextjs-toploader";
 import { Providers } from "./providers";
 import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
@@ -38,6 +39,14 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body>
+        {/* Barra di avanzamento in cima: feedback immediato a ogni navigazione,
+            senza rimontare il contenuto (così non disturba form/server action). */}
+        <NextTopLoader
+          color="#3b82f6"
+          height={3}
+          showSpinner={false}
+          shadow="0 0 8px #3b82f6"
+        />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers nonce={nonce}>{children}</Providers>
           <PwaRegister />
