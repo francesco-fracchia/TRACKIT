@@ -54,6 +54,7 @@ export function RecurringForm({
 
   const type = watch("type");
   const accountId = watch("accountId");
+  const frequency = watch("frequency");
   const cats = categories.filter((c) =>
     type === "income" ? c.kind === "income" : c.kind === "expense",
   );
@@ -170,12 +171,16 @@ export function RecurringForm({
             ))}
           </select>
         </div>
+        {frequency !== "once" && (
+          <div className="space-y-1">
+            <Label htmlFor="r-interval">Ogni</Label>
+            <Input id="r-interval" type="number" min={1} {...register("interval")} />
+          </div>
+        )}
         <div className="space-y-1">
-          <Label htmlFor="r-interval">Ogni</Label>
-          <Input id="r-interval" type="number" min={1} {...register("interval")} />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="r-dtstart">Inizio</Label>
+          <Label htmlFor="r-dtstart">
+            {frequency === "once" ? "Data" : "Inizio"}
+          </Label>
           <Input id="r-dtstart" type="date" {...register("dtstart")} />
         </div>
       </div>

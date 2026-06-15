@@ -35,6 +35,21 @@ describe("expandOccurrences", () => {
   });
 });
 
+describe("una tantum (once)", () => {
+  it("genera una regola con una sola occorrenza", () => {
+    const rule = buildRRuleString("once", 1);
+    expect(rule).toContain("COUNT=1");
+  });
+  it("espande a una sola data (la data di inizio)", () => {
+    const rule = buildRRuleString("once", 1);
+    const occ = expandOccurrences(rule, "2026-07-15", "2026-01-01", "2026-12-31");
+    expect(occ).toEqual(["2026-07-15"]);
+  });
+  it("descrizione 'Una tantum'", () => {
+    expect(describeRRule(buildRRuleString("once", 1), "once")).toBe("Una tantum");
+  });
+});
+
 describe("describeRRule", () => {
   it("descrive in italiano", () => {
     expect(describeRRule(buildRRuleString("monthly", 1), "monthly")).toBe(
