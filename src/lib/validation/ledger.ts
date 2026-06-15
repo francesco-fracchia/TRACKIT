@@ -50,6 +50,10 @@ export const createTransactionSchema = z
     attachmentId: z.string().optional(),
     /** Solo storico: incluso nei report ma escluso dal saldo. */
     excludeFromBalance: z.boolean().optional(),
+    /** Aliquota IVA in % (stringa: "" = nessuna, "22", "10", ...). */
+    vatRate: z.string().optional(),
+    /** Se true, l'importo inserito è IVA esclusa (imponibile). */
+    amountIsNet: z.boolean().optional(),
     // Solo per i trasferimenti:
     counterAccountId: z.string().optional(),
   })

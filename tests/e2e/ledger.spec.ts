@@ -158,6 +158,21 @@ test("flusso completo: spazio → conto → transazione", async ({ page }) => {
   ).toBeVisible();
   await expect(page.locator("table")).toContainText("200,00");
 
+  // 15c. IVA: entrata 100,00 + 22% "IVA esclusa" → IVA a debito 22,00.
+  await spaceNav.getByRole("link", { name: "Transazioni", exact: true }).click();
+  await page.locator("#tx-type").selectOption("income");
+  await page.getByLabel("Importo").fill("100,00");
+  await page.locator("#tx-vat").selectOption("22");
+  await page.getByRole("checkbox", { name: /IVA esclusa/ }).check();
+  await page.getByRole("button", { name: "Aggiungi transazione" }).click();
+  await expect(page.locator("table")).toContainText("IVA 22%");
+
+  await spaceNav.getByRole("link", { name: "IVA", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Riconciliazione IVA" }),
+  ).toBeVisible();
+  await expect(page.locator("table")).toContainText("22,00");
+
   // 16. Elimina lo spazio (conferma col nome) → torna alla lista, niente spazio.
   await page.goto(`/${spaceId}/settings`);
   await page

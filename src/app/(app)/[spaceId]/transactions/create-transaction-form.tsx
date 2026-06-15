@@ -39,6 +39,7 @@ export function CreateTransactionForm({
   today,
   attachmentsEnabled,
   payees = [],
+  showVat = false,
 }: {
   spaceId: string;
   accounts: AccountOpt[];
@@ -46,6 +47,7 @@ export function CreateTransactionForm({
   today: string;
   attachmentsEnabled: boolean;
   payees?: string[];
+  showVat?: boolean;
 }) {
   const [serverError, setServerError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -144,6 +146,25 @@ export function CreateTransactionForm({
           )}
         </div>
       </div>
+
+      {showVat && type !== "transfer" && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="tx-vat">IVA</Label>
+            <select id="tx-vat" className={selectClass} {...register("vatRate")}>
+              <option value="">Nessuna</option>
+              <option value="22">22%</option>
+              <option value="10">10%</option>
+              <option value="5">5%</option>
+              <option value="4">4%</option>
+            </select>
+          </div>
+          <label className="flex items-end gap-2 pb-2 text-sm">
+            <input type="checkbox" className="mb-0.5" {...register("amountIsNet")} />
+            <span>IVA esclusa (imponibile)</span>
+          </label>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">

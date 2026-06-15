@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import Link from "next/link";
 import { Paperclip } from "lucide-react";
+import { getSpace } from "@/server/dal/spaces";
 import { listAccountOptions } from "@/server/dal/accounts";
 import { listCategories } from "@/server/dal/categories";
 import { attachmentsEnabled } from "@/server/dal/attachments";
@@ -69,12 +70,14 @@ export default async function TransactionsPage({
     page: Number(str(sp.page) ?? "1") || 1,
   };
 
-  const [accounts, categories, result, payees] = await Promise.all([
+  const [space, accounts, categories, result, payees] = await Promise.all([
+    getSpace(spaceId),
     listAccountOptions(spaceId),
     listCategories(spaceId),
     listTransactions(spaceId, filter),
     listPayees(spaceId),
   ]);
+  const isBusiness = space.type === "business";
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.pageSize));
 
@@ -217,6 +220,7 @@ export default async function TransactionsPage({
                                   ? `→ ${t.counterAccountName ?? ""}`
                                   : t.categoryName ?? "—"}
                                 {t.tags.length > 0 && ` · ${t.tags.join(", ")}`}
+                                {t.vatRate != null && ` · IVA ${t.vatRate}%`}
                                 {t.excludeFromBalance && (
                                   <span className="ml-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
                                     storico
@@ -300,6 +304,7 @@ export default async function TransactionsPage({
               today={todayISO()}
               attachmentsEnabled={attachmentsEnabled()}
               payees={payees}
+              showVat={isBusiness}
             />
           </CardContent>
         </Card>

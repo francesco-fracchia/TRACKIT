@@ -12,6 +12,7 @@ import {
 } from "@/server/dal/transactions";
 import { requireSpaceMember } from "@/server/dal/context";
 import { parseMoney } from "@/lib/money";
+import { grossFromNet } from "@/server/services/vat";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp } from "@/lib/request";
 
@@ -45,10 +46,21 @@ export async function createTransactionAction(
     return { error: "L'importo deve essere maggiore di zero" };
   }
 
+  // IVA: l'aliquota si applica solo a entrate/uscite (non ai trasferimenti).
+  const rate =
+    parsed.data.type !== "transfer" && parsed.data.vatRate
+      ? Number(parsed.data.vatRate)
+      : 0;
+  const vatRate = Number.isFinite(rate) && rate > 0 ? Math.round(rate) : undefined;
+  // Se l'importo è "IVA esclusa" (imponibile), il lordo che muove cassa è
+  // imponibile + IVA. Memorizziamo sempre il LORDO come `amount`.
+  const gross =
+    vatRate && parsed.data.amountIsNet ? grossFromNet(cents, vatRate) : cents;
+
   await createTransaction(spaceId, {
     type: parsed.data.type,
     accountId: parsed.data.accountId,
-    amount: cents,
+    amount: gross,
     valueDate: parsed.data.valueDate,
     categoryId: parsed.data.categoryId || undefined,
     payee: parsed.data.payee || undefined,
@@ -56,6 +68,7 @@ export async function createTransactionAction(
     counterAccountId: parsed.data.counterAccountId || undefined,
     attachmentId: parsed.data.attachmentId || undefined,
     excludeFromBalance: parsed.data.excludeFromBalance ?? false,
+    vatRate,
     tagNames: parsed.data.tags,
   });
 

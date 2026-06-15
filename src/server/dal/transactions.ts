@@ -39,6 +39,7 @@ export interface CreateTransactionInput {
   counterAccountId?: string | undefined;
   attachmentId?: string | undefined;
   excludeFromBalance?: boolean | undefined;
+  vatRate?: number | undefined;
   tagNames?: readonly string[] | undefined;
 }
 
@@ -123,6 +124,7 @@ export async function createTransaction(
       payee: input.payee ?? null,
       note: input.note ?? null,
       excludeFromBalance: input.excludeFromBalance ?? false,
+      vatRate: input.vatRate ?? null,
       attachmentId,
       counterAccountId,
       counterAmount,
@@ -169,6 +171,7 @@ export interface TransactionRow {
   categoryName: string | null;
   attachmentUrl: string | null;
   excludeFromBalance: boolean;
+  vatRate: number | null;
   tags: string[];
 }
 
@@ -226,6 +229,7 @@ export async function listTransactions(
         categoryName: category.name,
         attachmentUrl: attachment.storageKey,
         excludeFromBalance: transaction.excludeFromBalance,
+        vatRate: transaction.vatRate,
       })
       .from(transaction)
       .leftJoin(

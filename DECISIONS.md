@@ -144,3 +144,7 @@
 ### D32 — Sezione "Fatturato" per gli spazi business
 **Scelta:** gli spazi di tipo `business` hanno una sezione **Fatturato** (`/[spaceId]/revenue`): totale storico, totale per anno selezionabile, media mensile e ripartizione per mese (grafico + tabella). Il tab compare nella nav solo se `space.type === "business"`. Il fatturato = somma delle **entrate** (`type=income`), incluse quelle "solo storico" (sono comunque fatturato).
 **Perché:** richiesta del committente; un'attività ha bisogno di un quadro sugli incassi distinto dal saldo. Nessuna nuova tabella: riusa le transazioni e l'analytics esistente. **Possibile estensione:** distinzione imponibile/IVA, fatturato per categoria/cliente.
+
+### D33 — IVA e riconciliazione (spazi business)
+**Scelta:** aggiunta aliquota IVA per transazione (`transaction.vat_rate`, % intera, NULL = senza IVA). `amount` resta sempre il LORDO (cassa); imponibile/IVA si derivano (`vat.ts`, scorporo). Nel form (solo business, non per i trasferimenti) si sceglie l'aliquota e si può marcare l'importo come "IVA esclusa" (imponibile → il lordo viene calcolato). Sezione **Riconciliazione IVA** (`/[spaceId]/vat`, solo business): IVA a debito (entrate) − a credito (uscite) per trimestre e anno.
+**Perché:** richiesta del committente (molte transazioni business sono IVA esclusa). Memorizzare il lordo mantiene i saldi corretti; l'IVA è un'informazione derivata e aggregabile. **Limite:** le transazioni già inserite senza aliquota non hanno IVA finché non vengono (ri)editate — l'edit transazioni è ancora da fare.

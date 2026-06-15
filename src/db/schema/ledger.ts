@@ -136,6 +136,11 @@ export const transaction = sqliteTable(
     excludeFromBalance: integer("exclude_from_balance", { mode: "boolean" })
       .notNull()
       .default(false),
+    /**
+     * Aliquota IVA in punti percentuali interi (es. 22). NULL = senza IVA/esente.
+     * `amount` è sempre il LORDO (cassa); imponibile e IVA si derivano da amount+rate.
+     */
+    vatRate: integer("vat_rate"),
     attachmentId: text("attachment_id").references(() => attachment.id, {
       onDelete: "set null",
     }),

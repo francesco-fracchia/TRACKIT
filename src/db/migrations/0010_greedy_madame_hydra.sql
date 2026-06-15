@@ -1,0 +1,1 @@
+ALTER TABLE `transaction` ADD `vat_rate` integer;

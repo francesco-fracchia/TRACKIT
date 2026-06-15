@@ -39,6 +39,7 @@ export function SpaceNav({
     ? [
         ...SECTIONS.slice(0, 3),
         { slug: "revenue", label: "Fatturato" },
+        { slug: "vat", label: "IVA" },
         ...SECTIONS.slice(3),
       ]
     : SECTIONS;
