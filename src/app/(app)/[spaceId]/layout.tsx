@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSpace } from "@/server/dal/spaces";
+import { getSpace, listMySpaces } from "@/server/dal/spaces";
 import { ForbiddenError, UnauthorizedError } from "@/server/dal/context";
 import { SpaceNav } from "./space-nav";
+import { SpaceSwitcher } from "./space-switcher";
 
 const TYPE_LABELS: Record<string, string> = {
   personal: "Personale",
@@ -28,23 +28,17 @@ export default async function SpaceLayout({
     throw err;
   }
 
+  const spaces = await listMySpaces();
+
   return (
     <div className="-mx-6 -my-8">
       <div className="flex items-center justify-between px-6 py-4">
         <div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/spaces"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Spazi
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <h1 className="text-lg font-semibold tracking-tight">
-              {space.name}
-            </h1>
-          </div>
-          <p className="text-xs text-muted-foreground">
+          <SpaceSwitcher
+            currentId={spaceId}
+            spaces={spaces.map((s) => ({ id: s.id, name: s.name }))}
+          />
+          <p className="px-2 text-xs text-muted-foreground">
             {TYPE_LABELS[space.type] ?? space.type} · {space.baseCurrency} ·
             ruolo: {space.role}
           </p>
